@@ -15,6 +15,7 @@ const User = require('./models/users.js');
 
 
 
+
 app.set("view engine","ejs")
 app.set("views",path.join(__dirname,"views"));
 app.use(express.urlencoded({extended:true}));
@@ -37,6 +38,12 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
  
+require('dotenv').config();
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Atlas Connected!"))
+  .catch(err => console.error("MongoDB Connection Error:", err));
+
 
 async function main() {
     await mongoose.connect('mongodb://127.0.0.1:27017/test');
