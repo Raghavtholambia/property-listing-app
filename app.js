@@ -38,11 +38,11 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
  
-require('dotenv').config();
+// require('dotenv').config();
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Atlas Connected!"))
-  .catch(err => console.error("MongoDB Connection Error:", err));
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Atlas Connected!"))
+//   .catch(err => console.error("MongoDB Connection Error:", err));
 
 
 async function main() {
