@@ -42,7 +42,7 @@ module.exports.validateReviews = (req, res, next) => {
 module.exports.listingOwner = async (req, res, next) => {
     let { id } = req.params;
     let checkId = await listing.findById(id)
-    if (!checkId.owner.equals(res.locals.currUser._id)) {
+if (!checkId.owner.equals(res.locals.currUser._id) && res.locals.currUser.role !== "admin") {
         req.flash("error","have no access to edit/delete particular listing")
         return res.redirect(`/listing/${id}`)
     }
@@ -52,9 +52,16 @@ module.exports.listingOwner = async (req, res, next) => {
 module.exports.revAuthor = async (req, res, next) => {
     let { id, revId } = req.params;
     let review = await reviews.findById(revId); // Fix variable name from `listing` to `Review`
-    if (!review.author.equals(res.locals.currUser._id)) {
+    if (!review.author.equals(res.locals.currUser._id) && res.locals.currUser.role !== "admin") {
         req.flash("error", "No permission to do that.");
         return res.redirect(`/listing/${id}`);
+    }
+    next();
+};
+module.exports.isAdmin = (req, res, next) => {
+    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+        req.flash("error", "You don't have admin access");
+        return res.redirect('/');
     }
     next();
 };

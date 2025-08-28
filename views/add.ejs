@@ -1,0 +1,6 @@
+<form action="/cart/add" method="POST">
+  <input type="hidden" name="userId" value="<%= currUser._id %>">
+  <input type="hidden" name="productId" value="<%= clickListing._id %>">
+  <input type="number" name="quantity" value="1" min="1">
+  <button type="submit" class="btn btn-outline-success">Add to Cart</button>
+</form>

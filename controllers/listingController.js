@@ -21,6 +21,13 @@ module.exports.getAllListings = async (req, res) => {
 };
 
 module.exports.renderNewForm = (req, res) => {
+  console.log(res.locals.currUser);
+  
+  if (res.locals.currUser.role !== "admin"&& res.locals.currUser.role !== "seller") {
+    req.flash("error","you are not registered as seller");
+    res.redirect("/listing");
+  }
+  else
   res.render("new");
 };
 
@@ -33,8 +40,21 @@ module.exports.getSingleListing = async (req, res) => {
     })
     .populate("owner");
 
-  res.render("Show", { clickListing });
+  if (!clickListing) {
+    req.flash("error", "Listing not found");
+    return res.redirect("/listing");
+  }
+
+  // ✅ calculate avg rating
+  let avgRating = 0;
+  if (clickListing.reviews.length > 0) {
+    const total = clickListing.reviews.reduce((sum, r) => sum + r.rating, 0);
+    avgRating = total / clickListing.reviews.length;
+  }
+
+  res.render("Show", { clickListing, avgRating });
 };
+
 
 module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;

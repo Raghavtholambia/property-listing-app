@@ -12,6 +12,8 @@ const flash=require('connect-flash')
 const LocalStrategy=require('passport-local')
 const passport = require('passport')
 const User = require('./models/users.js');
+const adminRouter = require('./routers/admin');
+const cartRoutes = require('./routers/cart.js');
 
 
 
@@ -67,14 +69,19 @@ app.use((req,res,next)=>{
     next()
 })
 
-app.use("/listing",listingRouter)
-app.use("/listing/:id",reviewsRouter)
-app.use("/",userRouter)
+// Specific routes first
+app.use('/', adminRouter);
+app.use('/cart', cartRoutes);
+app.use('/', userRouter);
 
-app.all("*",(req,res,next)=>{
-    next(new ExpressError(404,"page not found"))
+// THEN listing routes
+app.use("/listing/:id", reviewsRouter);  // Make sure this is the right path
+app.use("/listing", listingRouter);
 
-})
+// Catch-all 404 after all routes
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page not found"));
+});
 
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;

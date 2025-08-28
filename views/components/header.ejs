@@ -1,5 +1,4 @@
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 
 <!-- Bootstrap CSS -->
@@ -8,12 +7,22 @@
 <!-- Navbar (No Toggle for Small Screens) -->
 <nav class="navbar navbar-light bg-light px-4 py-3 shadow-sm" style="flex-wrap: wrap;">
   <div class="d-flex flex-wrap w-100 justify-content-between align-items-center">
-    
+
     <!-- Left Side -->
     <div class="d-flex gap-4 align-items-center">
       <a class="navbar-brand fw-bold text-primary" href="/">Tourify</a>
-      <a class="nav-link" href="/listing/new">New</a>
       <a class="nav-link" href="/listing">Listings</a>
+      <a class="nav-link" href="/cart/view">cart</a>
+
+      <% if (currUser && currUser.role!=='user' ) { %>
+        <a class="nav-link" href="/listing/new">New</a>
+        <% } %>
+
+
+          <% if (currUser && currUser.role==='admin' ) { %>
+            <a href="/admin">Admin Dashboard</a>
+            <% } %>
+
     </div>
 
     <!-- Right Side -->
@@ -21,10 +30,10 @@
       <% if(currUser) {%>
         <a class="nav-link text-danger" href="/logout">Logout</a>
         <% } %>
-      <% if(!currUser) {%>
-        <a class="nav-link" href="/">Sign In</a>
-        <a class="nav-link" href="/login">Login</a>
-        <% } %>
+          <% if(!currUser) {%>
+            <a class="nav-link" href="/">Sign In</a>
+            <a class="nav-link" href="/login">Login</a>
+            <% } %>
 
     </div>
 

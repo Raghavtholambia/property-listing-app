@@ -1,12 +1,24 @@
-const mongoose = require('mongoose'); // <-- fix here
-const {Schema}=mongoose;
-const pasportLocalMongoose=require('passport-local-mongoose')
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const passportLocalMongoose = require('passport-local-mongoose');
 
-const userSchema=new Schema({
-    email:{
-        type:String,
-        required:true
+// Schema
+const userSchema = new Schema({
+    email: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin', 'seller'],
+        default: 'user'
     }
-})
-userSchema.plugin(pasportLocalMongoose)
-module.exports=mongoose.model("userSchema",userSchema)
+});
+
+userSchema.plugin(passportLocalMongoose);
+
+// Model
+const User = mongoose.model("userSchema", userSchema);
+
+module.exports = User;
+ 

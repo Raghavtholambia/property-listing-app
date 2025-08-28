@@ -2,34 +2,37 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
 const passport = require('passport');
-const {saveRedirectUrl}=require('../middleware')
+const { saveRedirectUrl } = require('../middleware')
 
 router.get("/", (req, res) => {
-    res.render("register"); 
+    res.render("register");
 });
 
-router.post("/regiseredUser", async (req, res, next) => {
-    try {
-        const { username, email, password } = req.body;
-        const newUser = new User({ username, email });
-        const registeredUser = await User.register(newUser, password); 
-        req.login(registeredUser, (err) => {
-  
-//automatic login            
-          req.login(registeredUser,(err)=>{
-            if (err) {
-               return next(err)
-    
-            }
-            req.flash("success", "New user registered and logged in!");
-            res.redirect("/listing");
-          })
-             
-        });
-    } catch (e) {
-        req.flash("error", e.message);  // Make sure this runs
-        res.redirect("/");  // 👈 FIX: should redirect to the form ("/")
+router.post("/registeredUser", async (req, res, next) => {
+  try {
+    const { username, email, password, role } = req.body;
+ 
+    // Default role check
+    let userRole = ['user', 'seller'].includes(role) ? role : 'user';
+
+    // Auto-assign admin role for specific email
+    if (email === 'admin@gmail.com') {
+      userRole = 'admin';
     }
+
+    const newUser = new User({ username, email, role: userRole });
+    const registeredUser = await User.register(newUser, password);
+
+    req.login(registeredUser, (err) => {
+      if (err) return next(err);
+      req.flash("success", "New user registered and logged in!");
+      res.redirect("/listing");
+    });
+
+  } catch (e) {
+    req.flash("error", e.message);
+    res.redirect("/");
+  }
 });
 
 
