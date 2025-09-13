@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background: #f1f3f6;
+  margin: 0;
+  padding: 20px;
+}
+
+.checkout-container {
+  display: flex;
+  gap: 20px;
+}
+
+.checkout-left {
+  flex: 2;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.checkout-right {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.step {
+  margin-bottom: 20px;
+}
+
+.order-summary .item {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.order-summary img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.discount {
+  color: green;
+  font-size: 14px;
+}
+
+.place-order {
+  width: 100%;
+  padding: 12px;
+  background: #fb641b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <!-- Left Side -->
+    <div class="checkout-left">
+      <div class="step">
+        <h3>1. LOGIN</h3>
+        <p>+91 <%= currUser?.phone || "9876543210" %> <a href="#">Change</a></p>
+      </div>
+
+      <div class="step">
+        <h3>2. DELIVERY ADDRESS</h3>
+        <p><%= currUser?.address || "Your saved address here" %></p>
+      </div>
+
+      <div class="step order-summary">
+        <h3>3. ORDER SUMMARY</h3>
+
+        <% cart.items.forEach(item => { %>
+          <div class="item">
+            <img src="<%= item.product.image?.url || 'https://via.placeholder.com/60' %>" alt="Product">
+            <div>
+              <p><%= item.product.itemName %></p>
+              <p>₹<%= item.total %> 
+                 <span class="text-muted">(₹<%= item.product.pricePerDay %>/day </span>
+              </p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="checkout-right">
+      <h3>PRICE DETAILS</h3>
+      <p>Price (<%= cart.items.length %> items): <span>₹<%= cart.items.reduce((sum, i) => sum + i.total, 0) %></span></p>
+      <hr>
+      <h4>Total Payable: <span>₹<%= cart.grandTotal %></span></h4>
+      <p class="savings">You will save ₹0 on this order</p> <!-- optional discount -->
+      
+<form action="/cart/payment" method="GET">
+  <button type="submit" class="place-order">PLACE ORDER</button>
+</form>
+
+    </div>
+  </div>
+</body>
+
+</html>

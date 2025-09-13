@@ -1,3 +1,5 @@
+<%- include('../components/header.ejs') %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,7 +25,7 @@
     .cart-item img {
       width: 100%;
       height: 180px;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .cart-title {
@@ -32,54 +34,66 @@
     }
   </style>
 </head>
-
 <body>
 
   <div class="container my-5">
     <h1 class="text-center mb-4">🛒 Your Cart</h1>
 
-    <% if (cart.items.length> 0) { %>
+    <% if (cart.items.length > 0) { %>
       <div class="row">
-        <% cart.items.forEach(item=> { %>
+        <% cart.items.forEach(item => { %>
           <div class="col-md-6 col-lg-4">
-            <div class="cart-item">
-              <img src="<%= item.product.image?.url || 'https://via.placeholder.com/300x180' %>" alt="Listing Image">
+            <div class="cart-item shadow-sm rounded mb-4">
+              <img src="<%= item.product.image?.url || 'https://via.placeholder.com/300x180' %>" alt="Listing Image" class="img-fluid rounded-top">
               <div class="p-3">
-                <div class="cart-title">
-                  <%= item.product.title %>
+                <div class="cart-title mb-2">
+                  <%= item.product.itemName %>
                 </div>
-                <p class="text-muted mb-1">Price: ₹<%= item.product.price %>
+
+                <p class="text-muted mb-1">
+                  Price/Day: ₹<%= item.product.pricePerDay %>
                 </p>
-                <p class="mb-2">Quantity: <%= item.quantity %>
+                <p class="mb-1">
+                  Quantity: <%= item.quantity %>
                 </p>
+                <p class="mb-1">
+                  Rental: <%= item.days %> days 
+                  (<%= new Date(item.startDate).toDateString() %> → <%= new Date(item.endDate).toDateString() %>)
+                </p>
+                <p class="fw-bold text-success">
+                  Item Total: ₹<%= item.total %>
+                </p>
+
                 <!-- Remove single item -->
-                <form action="/cart/remove-from-cart/<%= item.product._id %>?_method=DELETE" method="POST"
-                  style="display:inline;">
+                <form action="/cart/remove-from-cart/<%= item.product._id %>?_method=DELETE" method="POST" style="display:inline;">
                   <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                 </form>
               </div>
             </div>
           </div>
-          <% }) %>
+        <% }) %>
       </div>
+
       <!-- Clear all items -->
-      <form action="/cart/clear" method="POST" style="display:inline;">
-        <button type="submit" class="btn btn-warning">Clear Cart</button>
-      </form>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <form action="/cart/clear" method="POST">
+          <button type="submit" class="btn btn-warning">Clear Cart</button>
+        </form>
 
-
-
-      <div class="mt-4 p-3 bg-white rounded shadow-sm text-end">
-        <h4>
-          Total: ₹<%= cart.items.reduce((total, item)=> total + item.product.price * item.quantity, 0) %>
-        </h4>
-        <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
+        <div class="p-3 bg-white rounded shadow-sm text-end">
+          <h4 class="mb-3">
+            Grand Total: ₹<%= cart.grandTotal %>
+          </h4>
+          <a href="/cart/checkout" class="btn btn-success">Proceed to Checkout</a>
+        </div>
       </div>
-      <% } else { %>
-        <p class="text-center fs-4 text-muted">Your cart is empty.</p>
-        <% } %>
+
+    <% } else { %>
+      <p class="text-center fs-4 text-muted">Your cart is empty.</p>
+    <% } %>
   </div>
 
 </body>
+
 
 </html>

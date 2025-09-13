@@ -1,105 +1,89 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
-const Listing = require("../models/listing"); // your product model
+const Listing = require("../models/listing"); 
 const Cart = require("../models/cart");
-const {isLoggedIn}=require("../middleware")
+const { isLoggedIn } = require("../middleware");
+const mongoose = require("mongoose");
 
-// 🛒 Add to Cart
-// ✅ Add to cart
 // 🛍️ View Cart
-// View cart
-router.get("/view", async (req, res) => {
-    if (!res.locals.currUser) {
-        req.flash("error", "You must be logged in to view cart");
-        return res.redirect("/login");
-    }
+router.get("/view", isLoggedIn, async (req, res) => {
+  const userId = req.user._id;
 
-    const userId = req.user._id;
-
-    try {
-        const cart = await Cart.findOne({ user: userId })
-            .populate("items.product");
-            console.log(cart);
-            
-
-        if (!cart || cart.items.length === 0) {
-            req.flash("error", "🛒 Your cart is empty.");
-            return res.redirect("/listing"); // redirect to shop instead of just plain text
-        }
-
-        cart.items = cart.items.filter(item => item.product !== null);
-await cart.save();
-res.render("cart/index", { cart });
-
-    } catch (err) {
-        console.error("Error fetching cart:", err);
-        req.flash("error", "Something went wrong while loading your cart.");
-        res.redirect("/listings");
-    }
-});
-
-
-router.post("/add/:id", isLoggedIn, async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Listing.findById(productId);
+  //       await Cart.findOneAndUpdate(
+  //     { user: req.user._id },
+  //     { $set: { items: [], grandTotal: 0 } },
+  //     { new: true }
+  //   );
+    const cart = await Cart.findOne({ user: userId })
+      .populate("items.product");
 
-    if (!product) {
-      req.flash("error", "Product not found");
+    if (!cart || cart.items.length === 0) {
+      req.flash("error", "🛒 Your cart is empty.");
       return res.redirect("/listing");
     }
 
-    let cart = await Cart.findOne({ user: req.user._id });
+    // filter out deleted products
+    cart.items = cart.items.filter(item => item.product !== null);
 
-    if (!cart) {
-      cart = new Cart({ user: req.user._id, items: [] });
-    }
-    console.log("---------------------------------------------------------------------------------------------------------------------,product.price");
-    
-    const existingItem = cart.items.find(item => item.product.equals(product._id));
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.items.push({
-        product: product._id,
-        quantity: 1,
-        price: product.price || 0   // ensure price
-      });
-    }
-    console.log("---------------------------------------------------------------------------------------------------------------------,product.price");
-    
-    // fix old items with missing price
-    cart.items.forEach(async (item, i) => {
-      if (!item.price) {
-        const p = await Listing.findById(item.product);
-        item.price = p ? p.price : 0;
-      }
-    });
-    
-    console.log("---------------------------------------------------------------------------------------------------------------------,product.price");
-    console.log(product.price);
-    
+    // recalc totals
+    cart.grandTotal = cart.items.reduce((acc, item) => acc + item.total, 0);
     await cart.save();
-    console.log("---------------------------------------------------------------------------------------------------------------------,product.price");
-    req.flash("success", "Product added to cart!");
-    res.redirect("/cart/view");
 
+    res.render("cart/index", { cart });
   } catch (err) {
-    console.error("Error adding to cart:", err);
-    req.flash("error", "Something went wrong");
+    console.error("Error fetching cart:", err);
+    req.flash("error", "Something went wrong while loading your cart.");
     res.redirect("/listing");
   }
 });
 
 
-// ✅ Remove from cart
-// REMOVE item from cart
+// Add to cart
+router.post("/add/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { startDate, endDate, quantity } = req.body;
+
+     console.log(req.body);
+     
+    const product = await Listing.findById(productId);
+    if (!product) return res.status(404).send("Product not found");
+
+    // Find or create cart
+    let cart = await Cart.findOne({ user: req.user._id });
+    if (!cart) {
+      cart = new Cart({ user: req.user._id, items: [] });
+    }
+
+    // Add new item
+cart.items.push({
+  product: product._id,
+  price: product.pricePerDay,
+  quantity: quantity || 1,
+  startDate: startDate ? new Date(startDate) : new Date(),
+  endDate: endDate ? new Date(endDate) : new Date(),
+});
+
+    console.log(cart.item);
+    
+
+    await cart.save();
+    res.redirect("/cart/view");
+  } catch (err) {
+    console.error("Error adding to cart:", err);
+    res.status(500).send("Error adding to cart");
+    res.redirect(`/add/${req.params.id}`)
+  }
+});
+
+
+
+
+// ❌ Remove item
 router.delete("/remove-from-cart/:id", isLoggedIn, async (req, res) => {
   try {
     const productId = req.params.id;
-
     let cart = await Cart.findOne({ user: req.user._id });
 
     if (!cart) {
@@ -107,11 +91,10 @@ router.delete("/remove-from-cart/:id", isLoggedIn, async (req, res) => {
       return res.redirect("/cart/view");
     }
 
-    // filter out the item with the given productId
     cart.items = cart.items.filter(item => !item.product.equals(productId));
+    cart.grandTotal = cart.items.reduce((acc, item) => acc + item.total, 0);
 
     await cart.save();
-
     req.flash("success", "Item removed from cart!");
     res.redirect("/cart/view");
 
@@ -123,35 +106,54 @@ router.delete("/remove-from-cart/:id", isLoggedIn, async (req, res) => {
 });
 
 
-
-// 🗑️ Clear the entire cart
-router.post("/clear", async (req, res) => {
+// 🗑️ Clear entire cart
+router.post("/clear", isLoggedIn, async (req, res) => {
   try {
-    const userId = req.user._id; // assuming user is logged in
-
-    // find the user's cart and empty it
     await Cart.findOneAndUpdate(
-      { user: userId },
-      { $set: { items: [] } }, // empty the items array
+      { user: req.user._id },
+      { $set: { items: [], grandTotal: 0 } },
       { new: true }
     );
-
+    req.flash("success", "Cart cleared!");
     res.redirect("/cart/view");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error clearing cart");
+    req.flash("error", "Error clearing cart");
+    res.redirect("/cart/view");
+  }
+});
+// Checkout Page
+router.get("/checkout",isLoggedIn, async (req, res) => {
+  try {
+    // Assuming req.user._id is available from session
+    const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
+
+    if (!cart || cart.items.length === 0) {
+      return res.redirect("/cart"); // if no items, go back to cart
+    }
+
+    res.render("payment/checkout", { cart });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/cart");
+  }
+});
+// Payment Page
+router.get("/payment",isLoggedIn, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
+
+    if (!cart || cart.items.length === 0) {
+      return res.redirect("/cart");
+    }
+
+    res.render("payment/payMethod", { cart });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/cart");
   }
 });
 
+
+
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-

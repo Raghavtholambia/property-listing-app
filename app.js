@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express=require('express')
 const app=express()
 const mongoose=require("mongoose")
@@ -14,9 +15,7 @@ const passport = require('passport')
 const User = require('./models/users.js');
 const adminRouter = require('./routers/admin');
 const cartRoutes = require('./routers/cart.js');
-
-
-
+const checkoutRoutes = require("./routers/checkout");
 
 app.set("view engine","ejs")
 app.set("views",path.join(__dirname,"views"));
@@ -39,13 +38,6 @@ app.use(passport.session())
 passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
- 
-// require('dotenv').config();
-
-// mongoose.connect(process.env.MONGO_URI)
-//   .then(() => console.log("MongoDB Atlas Connected!"))
-//   .catch(err => console.error("MongoDB Connection Error:", err));
-
 
 async function main() {
     await mongoose.connect('mongodb://127.0.0.1:27017/test');
@@ -56,8 +48,6 @@ main().then(()=>{
     console.log(err);
     
 })
-
-
 
 app.use((req,res,next)=>{
     const successMsg = req.flash("success");
@@ -77,6 +67,8 @@ app.use('/', userRouter);
 // THEN listing routes
 app.use("/listing/:id", reviewsRouter);  // Make sure this is the right path
 app.use("/listing", listingRouter);
+app.use("/checkout", checkoutRoutes);
+
 
 // Catch-all 404 after all routes
 app.all("*", (req, res, next) => {

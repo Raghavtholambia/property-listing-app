@@ -1,0 +1,187 @@
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f3f6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .payment-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .payment-left {
+      flex: 2;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .payment-right {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      height: fit-content;
+    }
+
+    .method {
+      padding: 15px;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .method.active {
+      border: 2px solid #2874f0;
+      background: #f5f9ff;
+    }
+
+    .form-box {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .form-box.active {
+      display: block;
+    }
+
+    .form-box input {
+      padding: 10px;
+      width: 80%;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .payBtn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #fb641b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .price-summary {
+      margin-top: 20px;
+    }
+
+    .discount {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="payment-container">
+    <!-- Left Side -->
+    <div class="payment-left">
+      <h2>Complete Payment</h2>
+
+      <div class="payment-methods">
+        <div class="method active" data-method="upi">UPI <small>Save upto ₹50 • 4 offers</small></div>
+        <div class="method" data-method="card">Credit / Debit / ATM Card <small>Save upto ₹100 • 4 offers</small></div>
+        <div class="method" data-method="cod">Cash on Delivery</div>
+      </div>
+
+      <!-- 🟢 UPI FORM -->
+      <div id="upi-form" class="form-box active">
+        <p>Add new UPI ID</p>
+        <input type="text" id="upi-input" placeholder="Enter your UPI ID" />
+        <button class="payBtn">Pay ₹<%= cart.grandTotal %></button>
+      </div>
+
+      <!-- 🟢 CARD FORM -->
+      <div id="card-form" class="form-box">
+        <input type="text" placeholder="Card Number" id="card-number" />
+        <input type="text" placeholder="Name on Card" id="card-name" />
+        <input type="text" placeholder="Expiry (MM/YY)" id="card-expiry" />
+        <input type="password" placeholder="CVV" id="card-cvv" />
+        <button class="payBtn">Pay ₹<%= cart.grandTotal %></button>
+      </div>
+
+      <!-- 🟢 COD FORM -->
+      <div id="cod-form" class="form-box">
+        <p>Pay with Cash on Delivery</p>
+        <button class="payBtn">Place Order (Pay ₹<%= cart.grandTotal %> on delivery)</button>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="payment-right">
+      <h3>PRICE DETAILS</h3>
+      <p>Price (<%= cart.items.length %> items): ₹<%= cart.items.reduce((sum, i) => sum + i.total, 0) %></p>
+      <p>Platform Fee: ₹5</p>
+      <hr>
+      <h3>Total Amount: ₹<%= cart.grandTotal + 5 %></h3>
+      <p class="discount">10% instant discount available</p>
+    </div>
+  </div>
+
+  <script>
+    // Switch Payment Method
+    document.querySelectorAll(".method").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".method").forEach(m => m.classList.remove("active"));
+        document.querySelectorAll(".form-box").forEach(f => f.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.method + "-form").classList.add("active");
+      });
+    });
+
+    // 🟢 Handle UPI
+    document.querySelector("#upi-form .payBtn").addEventListener("click", () => {
+      const upiId = document.querySelector("#upi-input").value;
+
+      fetch("/checkout/pay/upi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          upiId: upiId,
+          amount: <%= cart.grandTotal %>
+        })
+      })
+        .then(res => res.json())
+        .then(data => alert(data.message + " | UPI: " + data.upiId + " | Amount: ₹" + data.amount));
+    });
+
+    // 🟢 Handle Card
+    document.querySelector("#card-form .payBtn").addEventListener("click", () => {
+      const payload = {
+        cardNumber: document.getElementById("card-number").value,
+        name: document.getElementById("card-name").value,
+        expiry: document.getElementById("card-expiry").value,
+        cvv: document.getElementById("card-cvv").value,
+        amount: <%= cart.grandTotal %>
+      };
+
+      fetch("/checkout/pay/card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => alert(data.message));
+    });
+
+    // 🟢 Handle COD
+    document.querySelector("#cod-form .payBtn").addEventListener("click", () => {
+      fetch("/checkout/pay/cod", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: <%= cart.grandTotal %> })
+      })
+        .then(res => res.json())
+        .then(data => alert(data.message));
+    });
+  </script>
+</body>
