@@ -1,5 +1,7 @@
 const Listing = require("../models/listing");
 const { cloudinary } = require("../cloudConfig");
+const googleApiKey = process.env.GOOGLE_API_KEY;
+
 
 module.exports.createListing = async (req, res) => {
   const {
@@ -51,10 +53,10 @@ module.exports.renderNewForm = (req, res) => {
   
   if (res.locals.currUser.role !== "admin"&& res.locals.currUser.role !== "seller") {
     req.flash("error","you are not registered as seller");
-    res.redirect("/listing");
+    res.redirect("/listing", { apiKey: res.locals.googleApiKey });
   }
   else
-  res.render("new");
+  res.render("new",{ apiKey: res.locals.googleApiKey });
 };
 
 module.exports.getSingleListing = async (req, res) => {
@@ -68,7 +70,7 @@ module.exports.getSingleListing = async (req, res) => {
 
   if (!clickListing) {
     req.flash("error", "Listing not found");
-    return res.redirect("/listing");
+    return res.redirect("/listing", { apiKey: res.locals.googleApiKey });
   }
 
   // ✅ calculate avg rating
@@ -78,14 +80,14 @@ module.exports.getSingleListing = async (req, res) => {
     avgRating = total / clickListing.reviews.length;
   }
 
-  res.render("Show", { clickListing, avgRating });
+  res.render("Show", { clickListing, avgRating,apiKey: res.locals.googleApiKey});
 };
 
 
 module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;
   const newListing = await Listing.findById(id);
-  res.render("edit", { newListing });
+  res.render("edit", { newListing ,apiKey: res.locals.googleApiKey});
 };
 
 module.exports.updateListing = async (req, res) => {
