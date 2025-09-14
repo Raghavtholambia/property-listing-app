@@ -1,8 +1,7 @@
 // joi: joi is a package use for the schema validation rather then check one by one we can directly apply the joi to detact the mssing validation
 
-const Joi=require('joi')
+const Joi = require('joi')
 const review = require('./models/review')
-
 
 module.exports.listingSchema = Joi.object({
   listing: Joi.object({
@@ -18,13 +17,19 @@ module.exports.listingSchema = Joi.object({
     pricePerDay: Joi.number().required(),
     city: Joi.string().allow(""),          // optional
     country: Joi.string().allow(""),       // optional
+
+    // 🆕 Location fields
+    latitude: Joi.number().optional(),
+    longitude: Joi.number().optional(),
+    address: Joi.string().allow("")
+
   }).required()
 });
 
 
-module.exports.reviewSchema=Joi.object({
-    review:Joi.object({
-        rating:Joi.number().required().min(1).max(5),
-        comments:Joi.string().required()
-    }).required()
+module.exports.reviewSchema = Joi.object({
+  review: Joi.object({
+    rating: Joi.number().required().min(1).max(5),
+    comments: Joi.string().required()
+  }).required()
 })

@@ -54,6 +54,19 @@
     <input type="text" id="country" name="listing[country]" class="form-control" placeholder="India" required>
   </div>
 
+  
+ <!-- Location (Google Map) -->
+  <div class="mb-3">
+    <label for="map" class="form-label">Shop Location</label>
+    <div id="map" style="height: 300px; width: 100%; border-radius: 10px;"></div>
+    <small class="text-muted">📍 Move the marker to select your shop location</small>
+  </div>
+
+  <!-- hidden inputs -->
+  <input type="hidden" id="latitude" name="listing[latitude]">
+  <input type="hidden" id="longitude" name="listing[longitude]">
+  <input type="hidden" id="address" name="listing[address]">
+
   <!-- Submit -->
   <div class="d-grid">
     <button type="submit" class="btn btn-primary btn-lg">
@@ -62,3 +75,67 @@
     </button>
   </div>
 </form>
+
+<!-- Google Maps Script -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFhRYweQKpfULj3BEm_VD3dmMqA10QirY&libraries=places"></script>
+<script>
+  function initMap() {
+    const defaultLocation = { lat: 28.6139, lng: 77.2090 }; // fallback (Delhi)
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 12,
+      center: defaultLocation,
+    });
+
+    const marker = new google.maps.Marker({
+      position: defaultLocation,
+      map: map,
+      draggable: true,
+    });
+
+    const geocoder = new google.maps.Geocoder();
+
+    // function to update hidden inputs
+    function updatePosition(lat, lng) {
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lng;
+
+      // reverse geocode → get human readable address
+      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          document.getElementById("address").value = results[0].formatted_address;
+        }
+      });
+    }
+
+    // ✅ Use current location if available
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLocation = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
+          map.setCenter(userLocation);
+          map.setZoom(15);
+          marker.setPosition(userLocation);
+          updatePosition(userLocation.lat, userLocation.lng);
+        },
+        () => {
+          console.warn("⚠️ Location permission denied, using default Delhi");
+          updatePosition(defaultLocation.lat, defaultLocation.lng);
+        }
+      );
+    } else {
+      console.warn("⚠️ Geolocation not supported, using default Delhi");
+      updatePosition(defaultLocation.lat, defaultLocation.lng);
+    }
+
+    // ✅ Update when marker is dragged
+    google.maps.event.addListener(marker, "dragend", () => {
+      const pos = marker.getPosition();
+      updatePosition(pos.lat(), pos.lng());
+    });
+  }
+
+  window.onload = initMap;
+</script>

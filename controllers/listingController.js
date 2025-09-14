@@ -2,7 +2,17 @@ const Listing = require("../models/listing");
 const { cloudinary } = require("../cloudConfig");
 
 module.exports.createListing = async (req, res) => {
-  const { category, itemName, description, pricePerDay, city, country } = req.body.listing;
+  const {
+    category,
+    itemName,
+    description,
+    pricePerDay,
+    city,
+    country,
+    latitude,
+    longitude,
+    address
+  } = req.body.listing;
 
   const newListing = new Listing({
     category,
@@ -11,20 +21,24 @@ module.exports.createListing = async (req, res) => {
     pricePerDay,
     city,
     country,
-    owner: req.user._id
+    latitude,
+    longitude,
+    address,
+    owner: req.user._id,
   });
 
   if (req.file) {
     newListing.image = {
       url: req.file.path,
-      filename: req.file.filename
+      filename: req.file.filename,
     };
   }
 
   await newListing.save();
-  req.flash("success", "New rental item is created");
+  req.flash("success", "New rental item is created with shop location 📍");
   res.redirect("/listing");
 };
+
 
 
 module.exports.getAllListings = async (req, res) => {

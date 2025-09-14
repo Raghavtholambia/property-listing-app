@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const reviews = require('./review');
-
 const listingSchema = new Schema({
   category: {
     type: String,
@@ -23,14 +22,31 @@ const listingSchema = new Schema({
   },
   city: String,
   country: String,
-  reviews: [{
-    type: Schema.Types.ObjectId,
-    ref: "reviews"
-  }],
+
+  // 🆕 location fields
+  latitude: {
+    type: Number,
+    required: false, // optional for now
+  },
+  longitude: {
+    type: Number,
+    required: false,
+  },
+  address: {
+    type: String,
+    required: false,
+  },
+
+  reviews: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "reviews",
+    },
+  ],
   owner: {
     type: Schema.Types.ObjectId,
-    ref: "userSchema"
-  }
+    ref: "userSchema",
+  },
 });
 
 // delete reviews when listing deleted
