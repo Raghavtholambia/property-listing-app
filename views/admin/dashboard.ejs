@@ -3,9 +3,52 @@
 <div class="container">
   <h1>Admin Dashboard</h1>
   <div>
-    <p>Total Users: <strong><%= usersCount %></strong></p>
-    <p>Total Listings: <strong><%= listingsCount %></strong></p>
-    <p>Total Reviews: <strong><%= reviewsCount %></strong></p>
+    <p>
+      Total Users: 
+      <strong>
+        <a href="javascript:void(0)" onclick="toggleSection('usersList')">
+          <%= usersCount %>
+        </a>
+      </strong>
+    </p>
+    <div id="usersList" style="display:none; margin-left:20px;">
+      <h3>All Users</h3>
+      <ul>
+        <% users.forEach(user => { %>
+          <li><%= user.username %> - <%= user.email %></li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <p>
+      Total Sellers: 
+      <strong>
+        <a href="javascript:void(0)" onclick="toggleSection('sellersList')">
+          <%= sellersCount %>
+        </a>
+      </strong>
+    </p>
+    <div id="sellersList" style="display:none; margin-left:20px;">
+      <h3>All Sellers</h3>
+      <ul>
+        <% sellers.forEach(seller => { %>
+           <a href="/store/<%= seller._id %>">
+          <li><%= seller.username %> - <%= seller.email %></li>
+    </a>
+        <% }) %>
+      </ul>
+    </div>
+
+    <p>
+      Total Listings: <strong><%= listingsCount %></strong></p>
+    <p>
+      Total Reviews: <strong><%= reviewsCount %></strong></p>
   </div>
 </div>
 
+<script>
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.style.display = (el.style.display === "none") ? "block" : "none";
+  }
+</script>

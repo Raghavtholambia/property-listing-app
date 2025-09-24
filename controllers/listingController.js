@@ -38,14 +38,14 @@ module.exports.createListing = async (req, res) => {
 
   await newListing.save();
   req.flash("success", "New rental item is created with shop location 📍");
-  res.redirect("/listing");
+  res.redirect("/");
 };
 
 
 
 module.exports.getAllListings = async (req, res) => {
   const allListing = await Listing.find();
-  res.render("index", { users: allListing });
+  res.render("index", { listings: allListing });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -53,7 +53,7 @@ module.exports.renderNewForm = (req, res) => {
   
   if (res.locals.currUser.role !== "admin"&& res.locals.currUser.role !== "seller") {
     req.flash("error","you are not registered as seller");
-    res.redirect("/listing", { apiKey: res.locals.googleApiKey });
+    res.redirect("/", { apiKey: res.locals.googleApiKey });
   }
   else
   res.render("new",{ apiKey: res.locals.googleApiKey });
@@ -70,7 +70,7 @@ module.exports.getSingleListing = async (req, res) => {
 
   if (!clickListing) {
     req.flash("error", "Listing not found");
-    return res.redirect("/listing", { apiKey: res.locals.googleApiKey });
+    return res.redirect("/", { apiKey: res.locals.googleApiKey });
   }
 
   // ✅ calculate avg rating
@@ -118,5 +118,5 @@ module.exports.deleteListing = async (req, res) => {
   }
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing deleted successfully");
-  res.redirect("/listing");
+  res.redirect("/");
 };

@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const locationSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: "userSchema", // link to User schema
+    ref: "User", // link to User schema
     required: true
   },
   address: {

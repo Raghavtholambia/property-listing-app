@@ -18,7 +18,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .spinner {
       width: 50px;
       height: 50px;
@@ -27,208 +26,153 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
   </style>
 </head>
-<body class="bg-light">
+<body>
   <div id="upload-loader" style="display: none;">
     <div class="spinner"></div>
   </div>
 
-  <div class="container-fluid py-5 px-3">
+  <div class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-
-        <div class="card shadow-sm rounded-3">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
           <div class="card-body p-4">
-            <h2 class="card-title text-center mb-4 text-primary">Edit Property</h2>
+            <h2 class="text-center text-primary mb-4">Edit Property</h2>
             
-            <form 
-              id="uploadForm"
-              method="POST" 
-              action="/listing/<%= newListing._id %>?_method=PUT" 
-              enctype="multipart/form-data"
-            >
-              <!-- Title -->
+            <form id="uploadForm" method="POST" action="/listing/<%= newListing._id %>?_method=PUT" enctype="multipart/form-data">
+
+              <!-- Category -->
               <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                  <input
-                    type="text"
-                    id="title"
-                    name="listing[itemName]"
-                    class="form-control"
-                    value="<%= newListing.itemName %>"
-                    required
-                  />
-                </div>
+                <label class="form-label">Category</label>
+                <select name="listing[category]" class="form-select" required>
+                  <% ["Accessories", "Electronics", "Home Appliance", "Furniture", "Others"].forEach(opt => { %>
+                    <option value="<%= opt %>" <%= newListing.category === opt ? "selected" : "" %>>
+                      <%= opt %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <!-- Item Name -->
+              <div class="mb-3">
+                <label class="form-label">Item Name</label>
+                <input type="text" name="listing[itemName]" class="form-control" value="<%= newListing.itemName %>" required />
               </div>
 
               <!-- Description -->
               <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-pencil"></i></span>
-                  <textarea
-                    id="description"
-                    name="listing[description]"
-                    class="form-control"
-                    rows="4"
-                  ><%= newListing.description %></textarea>
-                </div>
+                <label class="form-label">Description</label>
+                <textarea name="listing[description]" class="form-control" rows="3"><%= newListing.description %></textarea>
               </div>
 
-              <!-- Current Image Preview -->
+              <!-- Current Image -->
               <% if (newListing.image && newListing.image.url) { %>
                 <div class="mb-3 text-center">
-                  <img
-                    src="<%= newListing.image.url %>"
-                    alt="Current Image"
-                    class="img-fluid rounded mb-2"
-                    style="max-height: 200px;"
-                  />
+                  <img src="<%= newListing.image.url %>" alt="Image" class="img-fluid rounded" style="max-height:200px;" />
                   <p class="small text-muted">Current Image</p>
                 </div>
               <% } %>
 
-              <!-- Replace Image -->
+              <!-- Upload New Image -->
               <div class="mb-3">
-                <label for="image" class="form-label">Replace Image</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-image"></i></span>
-                  <input
-                    type="file"
-                    id="image"
-                    name="listing[image]"
-                    class="form-control"
-                    accept="image/*"
-                  />
-                </div>
+                <label class="form-label">Replace Image</label>
+                <input type="file" name="listing[image]" class="form-control" accept="image/*" />
               </div>
 
               <!-- Price -->
               <div class="mb-3">
-                <label for="price" class="form-label">Price (₹)</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                  <input
-                    type="number"
-                    id="price"
-                    name="listing[pricePerDay]"
-                    class="form-control"
-                    value="<%= newListing.pricePerDay %>"
-                    min="0"
-                    required
-                  />
-                </div>
+                <label class="form-label">Price per Day (₹)</label>
+                <input type="number" name="listing[pricePerDay]" class="form-control" value="<%= newListing.pricePerDay %>" required />
               </div>
 
-              <!-- Detected Address -->
+              <!-- City -->
               <div class="mb-3">
-                <label for="address-display" class="form-label">Detected Address</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                  <input
-                    type="text"
-                    id="address-display"
-                    class="form-control"
-                    value="<%= newListing.address || '' %>"
-                    readonly
-                  />
-                </div>
+                <label class="form-label">City</label>
+                <input type="text" name="listing[city]" class="form-control" value="<%= newListing.city || '' %>" />
               </div>
 
-              <!-- Hidden fields for lat/lng -->
+              <!-- Country -->
+              <div class="mb-3">
+                <label class="form-label">Country</label>
+                <input type="text" name="listing[country]" class="form-control" value="<%= newListing.country || '' %>" />
+              </div>
+
+              <!-- Address (detected) -->
+              <div class="mb-3">
+                <label class="form-label">Detected Address</label>
+                <input type="text" id="address-display" class="form-control" value="<%= newListing.address || '' %>" readonly />
+              </div>
+
+              <!-- Hidden fields -->
               <input type="hidden" id="latitude" name="listing[latitude]" value="<%= newListing.latitude || '' %>">
               <input type="hidden" id="longitude" name="listing[longitude]" value="<%= newListing.longitude || '' %>">
               <input type="hidden" id="address" name="listing[address]" value="<%= newListing.address || '' %>">
-              <!-- Add Map Container -->
-<div class="mb-3">
-  <label class="form-label">Your Location on Map</label>
-  <div id="map" style="height: 300px; width: 100%; border-radius: 10px;"></div>
-</div>
 
+              <!-- Map -->
+              <div class="mb-3">
+                <label class="form-label">Location on Map</label>
+                <div id="map" style="height:300px; border-radius:10px;"></div>
+              </div>
 
-              <!-- Submit Button -->
+              <!-- Submit -->
               <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg">
-                  <i class="bi bi-pencil-square me-2"></i>
-                  Update Property
+                  <i class="bi bi-pencil-square me-2"></i> Update Property
                 </button>
               </div>
             </form>
 
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS + Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   
-  <!-- Google Maps API -->
- <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<%=apiKey>&libraries=places" async defer></script>
 
-<script>
-  const form = document.getElementById("uploadForm");
-  const uploadLoader = document.getElementById("upload-loader");
+  <!-- Google Maps -->
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&libraries=places&callback=initMap" async defer></script>
+  <script>
+    let map, marker;
 
-  form.addEventListener("submit", function () {
-    uploadLoader.style.display = "flex";
-  });
+    function initMap() {
+      const lat = parseFloat(document.getElementById("latitude").value) || 28.6139; // fallback: Delhi
+      const lng = parseFloat(document.getElementById("longitude").value) || 77.2090;
 
-  let map, marker;
+      const latlng = { lat, lng };
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: latlng,
+        zoom: 15,
+      });
 
-  // Detect user location + show map
-  document.addEventListener("DOMContentLoaded", () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+      marker = new google.maps.Marker({
+        position: latlng,
+        map,
+        draggable: true,
+      });
 
-          // Fill hidden fields
-          document.getElementById("latitude").value = lat;
-          document.getElementById("longitude").value = lng;
+      // Update fields when marker dragged
+      const geocoder = new google.maps.Geocoder();
+      google.maps.event.addListener(marker, "dragend", function (event) {
+        document.getElementById("latitude").value = event.latLng.lat();
+        document.getElementById("longitude").value = event.latLng.lng();
 
-          // Init map
-          const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
-          map = new google.maps.Map(document.getElementById("map"), {
-            center: latlng,
-            zoom: 15,
-          });
-
-          // Marker
-          marker = new google.maps.Marker({
-            position: latlng,
-            map: map,
-            title: "Your Location",
-          });
-
-          // Get human-readable address
-          const geocoder = new google.maps.Geocoder();
-          geocoder.geocode({ location: latlng }, (results, status) => {
-            if (status === "OK" && results[0]) {
-              document.getElementById("address").value = results[0].formatted_address;
-              document.getElementById("address-display").value = results[0].formatted_address;
-            }
-          });
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          alert("Unable to fetch your current location!");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser.");
+        geocoder.geocode({ location: event.latLng }, (results, status) => {
+          if (status === "OK" && results[0]) {
+            document.getElementById("address").value = results[0].formatted_address;
+            document.getElementById("address-display").value = results[0].formatted_address;
+          }
+        });
+      });
     }
-  });
-</script>
+
+    window.initMap = initMap;
+  </script>
+</body>
+</html>

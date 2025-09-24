@@ -39,24 +39,24 @@
 
 
       <div class="row gx-4 gy-5">
-        <% users.forEach(user => { %>
+        <% listings.forEach(listing => { %>
           <div class="col-12 col-sm-6 col-lg-4">
-            <a href="/listing/<%= user.id %>" class="text-decoration-none">
+            <a href="/listing/<%= listing.id %>" class="text-decoration-none">
               <div class="card card-hover h-100 border-0 rounded-3">
                 
                 <!-- Fixed-size image box -->
                 <div class="listing-img">
-                  <img src="<%= user.image.url %>" alt="Listing Image">
+                  <img src="<%= listing.image.url %>" alt="Listing Image">
                 </div>
                 
                 <div class="card-body">
-                  <h5 class="card-title text-dark"><%= user.itemName %></h5>
+                  <h5 class="card-title text-dark"><%= listing.itemName %></h5>
                   <p class="card-text text-secondary" style="height: 4.5em; overflow: hidden;">
-                    <%= user.description %>
+                    <%= listing.description %>
                   </p>
                 </div>
                 <div class="card-footer bg-white border-0">
-                  <span class="h5 text-danger">₹ <%= user.pricePerDay %> /day</span>
+                  <span class="h5 text-danger">₹ <%= listing.pricePerDay %> /day</span>
                   <span class="float-end text-muted small">View details &rarr;</span>
                 </div>
               </div>

@@ -15,11 +15,11 @@ const listingController = require("../controllers/listingController");
 router.get("/", wrapAsync(listingController.getAllListings));
 
 // New form
-router.get("/new", isLoggedIn, listingController.renderNewForm);
+router.get("/listing/new", isLoggedIn, listingController.renderNewForm);
 
 // Create listing
 router.post(
-  "/",
+  "/listing",
   isLoggedIn,
   upload.single("listing[image]"),
   validateListing,
@@ -27,11 +27,11 @@ router.post(
 );
 
 // Show single listing
-router.get("/:id", wrapAsync(listingController.getSingleListing));
+router.get("/listing/:id", wrapAsync(listingController.getSingleListing));
 
 // Edit form
 router.get(
-  "/:id/edit",
+  "/listing/:id/edit",
   isLoggedIn,
   listingOwner,
   wrapAsync(listingController.renderEditForm)
@@ -39,7 +39,7 @@ router.get(
 
 // Update listing
 router.put(
-  "/:id",
+  "/listing/:id",
   isLoggedIn,
   upload.single("listing[image]"),
   validateListing,
@@ -49,7 +49,7 @@ router.put(
 
 // Delete listing
 router.delete(
-  "/:id",
+  "/listing/:id",
   isLoggedIn,
   listingOwner,
   wrapAsync(listingController.deleteListing)

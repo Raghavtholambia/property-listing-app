@@ -9,17 +9,17 @@ const ExpressError=require('./utils/ExpressError.js');
 const listing = require("./models/listing.js")
 
 
+// middleware.js
 module.exports.isLoggedIn = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-
-        // to store the information in the in the session of the user try to access url which needs authantication so after login user will redirect to the url 
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
-
-        req.flash("error", "You must be login to create/edit/delete new listing")
-        return res.redirect("/login")
+        req.flash("error", "You must be logged in to continue.");
+        // Instead of redirecting to /user/login, go back to home with a query flag
+        return res.redirect("/?showLogin=true");
     }
-    next()
-}
+    next();
+};
+
 module.exports.saveRedirectUrl = (req, res, next) => {
     if (req.session.redirectUrl) {
         res.locals.redirectUrl = req.session.redirectUrl;
@@ -65,3 +65,20 @@ module.exports.isAdmin = (req, res, next) => {
     }
     next();
 };
+
+// middleware/checkRole.js
+module.exports.checkRole=(req, res, next)=> {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+
+  if (req.user.role === "admin") {
+    return res.redirect("/admin");
+  } else if (req.user.role === "seller") {
+    return res.redirect(`/store/${req.user._id}`);
+  } else {
+    return res.redirect("/"); // normal user → homepage
+  }
+  next();
+}
+

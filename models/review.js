@@ -14,7 +14,7 @@ const reviewsSchema=new Schema({
     },
     author:{
         type:Schema.Types.ObjectId,
-        ref:"userSchema"
+        ref:"User"
     }
 })
 

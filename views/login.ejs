@@ -23,7 +23,7 @@
             <h4>Login</h4>
           </div>
           <div class="card-body">
-            <form action="/login" method="POST">
+            <form action="/user/login" method="POST">
               <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" name="username" id="username" required>
@@ -32,6 +32,10 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" name="password" id="password" required>
               </div>
+              <a href="/user/google" class="btn btn-danger">
+  <i class="fab fa-google"></i> Login with Google
+</a>
+
               <button type="submit" class="btn btn-success w-100">Login</button>
             </form>
           </div>
