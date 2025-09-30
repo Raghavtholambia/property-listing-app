@@ -3,6 +3,12 @@ const { Schema } = mongoose;
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const userSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,  // ✅ username must be unique
+    trim: true
+  },
   email: {
     type: String,
     required: true
@@ -18,21 +24,26 @@ const userSchema = new Schema({
     sparse: true
   },
   isVerified: { type: Boolean, default: false },
- verificationOtp: String,
+  verificationOtp: String,
   otpExpires: Date,  
 });
-userSchema.plugin(passportLocalMongoose);
+
+// passport-local-mongoose will handle password hashing & username field
+userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+
 // (async () => {
 
 //   try {
     
 
 //     // delete all users and sellers (keep admin)
-//     await User.deleteMany();
-//    // await User.deleteOne({ username: "rego12" });
+//     const user= await User.find({ });
+//     console.log(user);
+//     //  await User.deleteMany({username: "raghav"});
+
 
 //     console.log("✅ All users and sellers deleted!");
     

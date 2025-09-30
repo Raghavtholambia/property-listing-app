@@ -69,7 +69,7 @@ router.post("/verify-otp", async (req, res) => {
     return res.redirect("/?showLogin=true&tab=register");
   }
 
-  if (user.verificationOtp !== otp || user.otpExpires < Date.now()) {
+  if (user.verificationOtp !== otp) {
     req.flash("error", "Invalid or expired OTP.");
     return res.redirect(`/?showVerifyOtp=true&email=${email}`);
   }
@@ -79,14 +79,21 @@ router.post("/verify-otp", async (req, res) => {
   user.otpExpires = undefined;
   await user.save();
 
-  req.flash("success", "Email verified! You can log in now.");
-  res.redirect("/?showLogin=true&tab=login");
+  req.login(user, (err) => {
+    if (err) return next(err);
+    req.flash("success", "Email verified! You are now logged in.");
+    res.redirect(res.locals.redirectUrl || "/");
+  });
 });
 
 
 
 // Login form
-router.get("/login", (req, res) => {
+router.get("/login",saveRedirectUrl, (req, res) => {
+  if(req.user) {
+    req.flash("error","u are already logdin")
+    return res.redirect(res.locals.redirectUrl || "/")
+  }
     res.render("login");
 });
 
@@ -95,14 +102,14 @@ router.post(
   "/login",
   saveRedirectUrl,
   passport.authenticate("local", {
-    failureRedirect: "/user/login",
+    failureRedirect: "/?showLogin=true&tab=register",
     failureFlash: true,
   }),
   async (req, res, next) => {
     if (!req.user.isVerified) {
       req.logout(() => {
         req.flash("error", "Please verify your email before logging in.");
-        res.redirect("/user/login");
+    res.redirect("/?showLogin=true&tab=register"); // open register tab again
       });
     } else {
       req.flash("success", "Welcome back!",req.user.username);

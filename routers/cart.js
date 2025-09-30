@@ -20,7 +20,7 @@ router.get("/view", isLoggedIn, async (req, res) => {
 
     if (!cart || cart.items.length === 0) {
       req.flash("error", "🛒 Your cart is empty.");
-      return res.redirect("/listing");
+      return res.redirect("/");
     }
 
     // filter out deleted products
@@ -34,7 +34,7 @@ router.get("/view", isLoggedIn, async (req, res) => {
   } catch (err) {
     console.error("Error fetching cart:", err);
     req.flash("error", "Something went wrong while loading your cart.");
-    res.redirect("/listing");
+    res.redirect("/");
   }
 });
 

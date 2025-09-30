@@ -1,54 +1,137 @@
 <%- include('../components/header') %>
 
-<div class="container">
-  <h1>Admin Dashboard</h1>
-  <div>
-    <p>
-      Total Users: 
-      <strong>
-        <a href="javascript:void(0)" onclick="toggleSection('usersList')">
-          <%= usersCount %>
-        </a>
-      </strong>
-    </p>
-    <div id="usersList" style="display:none; margin-left:20px;">
-      <h3>All Users</h3>
-      <ul>
-        <% users.forEach(user => { %>
-          <li><%= user.username %> - <%= user.email %></li>
-        <% }) %>
-      </ul>
+<div class="container-fluid mt-4">
+  <h1 class="mb-4 text-center fw-bold text-primary">Admin Dashboard</h1>
+
+  <div class="row g-4">
+    <!-- USERS -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-users"></i> Users</span>
+          <span class="fw-bold">
+            <a href="javascript:void(0)" class="text-white text-decoration-underline" onclick="toggleSection('usersList')">
+              <%= usersCount %>
+            </a>
+          </span>
+        </div>
+        <div class="card-body" id="usersList" style="display:none;">
+          <h5 class="fw-bold mb-3">All Users</h5>
+          <ul class="list-group">
+            <% users.forEach(user => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center" id="user-<%= user._id %>">
+                <span>
+                  <i class="fa fa-user-circle text-primary"></i> 
+                  <%= user.username %> - <%= user.email %>
+                </span>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="<%= user._id %>">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <p>
-      Total Sellers: 
-      <strong>
-        <a href="javascript:void(0)" onclick="toggleSection('sellersList')">
-          <%= sellersCount %>
-        </a>
-      </strong>
-    </p>
-    <div id="sellersList" style="display:none; margin-left:20px;">
-      <h3>All Sellers</h3>
-      <ul>
-        <% sellers.forEach(seller => { %>
-           <a href="/store/<%= seller._id %>">
-          <li><%= seller.username %> - <%= seller.email %></li>
-    </a>
-        <% }) %>
-      </ul>
+    <!-- SELLERS -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-store"></i> Sellers</span>
+          <span class="fw-bold">
+            <a href="javascript:void(0)" class="text-white text-decoration-underline" onclick="toggleSection('sellersList')">
+              <%= sellersCount %>
+            </a>
+          </span>
+        </div>
+        <div class="card-body" id="sellersList" style="display:none;">
+          <h5 class="fw-bold mb-3">All Sellers</h5>
+          <ul class="list-group">
+            <% sellers.forEach(seller => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center" id="user-<%= seller._id %>">
+                <span>
+                  <a href="/store/<%= seller._id %>" class="text-decoration-none">
+                    <i class="fa fa-user-tie text-success"></i> 
+                    <%= seller.username %> - <%= seller.email %>
+                  </a>
+                </span>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="<%= seller._id %>">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <p>
-      Total Listings: <strong><%= listingsCount %></strong></p>
-    <p>
-      Total Reviews: <strong><%= reviewsCount %></strong></p>
+    <!-- COUNTS -->
+    <div class="col-md-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white fw-bold">
+          <i class="fa fa-chart-bar"></i> Site Statistics
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <h4 class="fw-bold text-primary"><%= usersCount %></h4>
+              <p class="mb-0">Users</p>
+            </div>
+            <div class="col-md-3">
+              <h4 class="fw-bold text-success"><%= sellersCount %></h4>
+              <p class="mb-0">Sellers</p>
+            </div>
+            <div class="col-md-3">
+              <h4 class="fw-bold text-warning"><%= listingsCount %></h4>
+              <p class="mb-0">Listings</p>
+            </div>
+            <div class="col-md-3">
+              <h4 class="fw-bold text-danger"><%= reviewsCount %></h4>
+              <p class="mb-0">Reviews</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <script>
+  // Toggle show/hide section
   function toggleSection(id) {
     const el = document.getElementById(id);
     el.style.display = (el.style.display === "none") ? "block" : "none";
   }
+
+  // Handle delete buttons
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this user?")) {
+          try {
+            const res = await fetch(`/admin/users/${id}`, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+              document.getElementById(`user-${id}`).remove();
+            } else {
+              alert("Failed to delete user");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Error deleting user");
+          }
+        }
+      });
+    });
+  });
 </script>

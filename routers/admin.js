@@ -14,12 +14,12 @@ router.get("/resouce",(req,res)=>{
 
 
 router.get("/admin", isAdmin, async (req, res) => {
-  const usersCount = await User.countDocuments({});
+  const usersCount = await User.countDocuments({role: "user"});
   const sellersCount = await User.countDocuments({ role: "seller" });
   const listingsCount = await Listing.countDocuments({});
   const reviewsCount = await Review.countDocuments({});
 
-  const users = await User.find({});
+  const users = await User.find({role: "user"});
   const sellers = await User.find({ role: "seller" });
 
   res.render("admin/dashboard", { 
@@ -31,5 +31,23 @@ router.get("/admin", isAdmin, async (req, res) => {
     sellers
   });
 });
+
+// Delete individual user
+router.delete("/admin/users/:id", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await User.findByIdAndDelete(id);
+
+    // Optionally delete related listings/reviews
+    await Listing.deleteMany({ owner: id });
+    await Review.deleteMany({ author: id });
+
+    res.json({ success: true, id }); // return success + deleted user id
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Failed to delete user" });
+  }
+});
+
 
 module.exports = router;
