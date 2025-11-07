@@ -22,20 +22,9 @@ const listingSchema = new Schema({
   },
   city: String,
   country: String,
-
-  // 🆕 location fields
-  latitude: {
-    type: Number,
-    required: false, // optional for now
-  },
-  longitude: {
-    type: Number,
-    required: false,
-  },
-  address: {
-    type: String,
-    required: false,
-  },
+  latitude: Number,
+  longitude: Number,
+  address: String,
 
   reviews: [
     {
@@ -43,9 +32,16 @@ const listingSchema = new Schema({
       ref: "reviews",
     },
   ],
+
   owner: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+
+  // ⭐ New field for average rating
+  averageRating: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -55,6 +51,18 @@ listingSchema.post("findOneAndDelete", async (listing) => {
     await reviews.deleteMany({ _id: { $in: listing.reviews } });
   }
 });
+
+listingSchema.methods.updateAverageRating = async function () {
+  await this.populate("reviews");
+  if (!this.reviews.length) {
+    this.averageRating = 0;
+  } else {
+    const total = this.reviews.reduce((sum, r) => sum + r.rating, 0);
+    this.averageRating = (total / this.reviews.length).toFixed(1);
+  }
+  await this.save();
+};
+
 
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;

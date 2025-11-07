@@ -3,36 +3,125 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Listings</title>
+    <title>Premium Listings</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- FontAwesome & Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
     <style>
       body {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #f8f9fa, #eef1f5);
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
       }
-      .card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+
+      .listing-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease-in-out;
+        background: rgba(255, 255, 255, 0.95);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(10px);
       }
-      /* fixed image box with full cover */
+
+      .listing-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      }
+
       .listing-img {
-        height: 250px;
+        height: 260px;
         width: 100%;
         overflow: hidden;
-        border-radius: 8px 8px 0 0;
       }
+
       .listing-img img {
-        width: auto;
+        width: 100%;
         height: 100%;
-        object-fit: cover; /* makes image fill box fully */
-        display: block;
+        object-fit: cover;
+        transition: transform 0.5s ease;
       }
+
+      .listing-card:hover .listing-img img {
+        transform: scale(1.08);
+      }
+
       .card-body {
-        min-height: 120px; /* keeps size consistent */
+        flex-grow: 1;
+        padding: 1.2rem 1.3rem;
+      }
+
+      .card-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #212529;
+      }
+
+      .card-text {
+        color: #6c757d;
+        font-size: 0.93rem;
+        height: 4.2em;
+        overflow: hidden;
+      }
+
+      .price-tag {
+        color: #dc3545;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+
+      .category-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: linear-gradient(45deg, #a05107, #650e2a);
+        color: #fff;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .location-text {
+        color: #495057;
+        font-size: 0.9rem;
+      }
+
+      .rating i {
+        color: #ffc107;
+        font-size: 0.9rem;
+      }
+
+      .no-rating {
+        font-size: 0.85rem;
+        color: #adb5bd;
+      }
+
+      .card-footer {
+        background: #fff;
+        border-top: 1px solid #dee2e6;
+        padding: 0.9rem 1.3rem;
+      }
+
+      h2.section-title {
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 2.5rem;
       }
     </style>
   </head>
+
   <body>
     <div class="container py-5">
-      <!-- Success / Error -->
       <% if ((success && success.length) || (error && error.length)) { %>
         <%- include('./components/notification.ejs') %>
       <% } %>
@@ -40,33 +129,56 @@
 
       <div class="row gx-4 gy-5">
         <% listings.forEach(listing => { %>
-          <div class="col-12 col-sm-6 col-lg-4">
-            <a href="/listing/<%= listing.id %>" class="text-decoration-none">
-              <div class="card card-hover h-100 border-0 rounded-3">
-                
-                <!-- Fixed-size image box -->
+          <div class="col-12 col-sm-6 col-lg-4 d-flex">
+            <a href="/listing/<%= listing.id %>" class="text-decoration-none w-100">
+              <div class="listing-card position-relative">
+
+                <!-- Image -->
                 <div class="listing-img">
-                  <img src="<%= listing.image.url %>" alt="Listing Image">
+                  <img src="<%= listing.image.url %>" alt="Listing Image" />
+                  <span class="category-badge"><%= listing.category %></span>
                 </div>
-                
+
+                <!-- Body -->
                 <div class="card-body">
-                  <h5 class="card-title text-dark"><%= listing.itemName %></h5>
-                  <p class="card-text text-secondary" style="height: 4.5em; overflow: hidden;">
-                    <%= listing.description %>
-                  </p>
+                  <h5 class="card-title"><%= listing.itemName %></h5>
+                  <p class="card-text"><%= listing.description %></p>
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="location-text">
+                      <i class="fa-solid fa-location-dot me-1 text-danger"></i>
+                      <%= listing.city %>, <%= listing.country %>
+                    </span>
+
+                    <!-- Dynamic rating -->
+                    <% if (listing.averageRating && listing.averageRating > 0) { %>
+                      <span class="rating">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <% if (i <= Math.round(listing.averageRating)) { %>
+                            <i class="fa-solid fa-star"></i>
+                          <% } else { %>
+                            <i class="fa-regular fa-star"></i>
+                          <% } %>
+                        <% } %>
+                      </span>
+                    <% } else { %>
+                      <span class="no-rating">No ratings yet</span>
+                    <% } %>
+                  </div>
                 </div>
-                <div class="card-footer bg-white border-0">
-                  <span class="h5 text-danger">₹ <%= listing.pricePerDay %> /day</span>
-                  <span class="float-end text-muted small">View details &rarr;</span>
+
+                <!-- Footer -->
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                  <span class="price-tag">₹ <%= listing.pricePerDay %> /day</span>
+                  <span class="text-muted small">View details →</span>
                 </div>
               </div>
             </a>
-            <hr>
           </div>
         <% }) %>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

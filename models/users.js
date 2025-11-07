@@ -6,33 +6,47 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    unique: true,  // ✅ username must be unique
-    trim: true
+    unique: true,
+    trim: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
   },
   role: {
     type: String,
     enum: ['user', 'admin', 'seller'],
-    default: 'user'
+    default: 'user',
   },
   googleId: {
-    type: String, // store google profile ID
+    type: String,
     unique: true,
-    sparse: true
+    sparse: true,
   },
   isVerified: { type: Boolean, default: false },
   verificationOtp: String,
-  otpExpires: Date,  
+  otpExpires: Date,
+
+  // 👇 added for profile section
+  fullName: String,
+  bio: String,
+  phone: String,
+  address: String,
+  profileImage: {
+    type: String,
+    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png", // default avatar
+  },
 });
 
-// passport-local-mongoose will handle password hashing & username field
 userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+
+
+
+
 
 // (async () => {
 

@@ -3,66 +3,239 @@
   <title>Rent Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <style>
-    /* Mega dropdown */
-    .mega-dropdown .dropdown-menu {
-      width: 800px;
-      border: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .mega-menu .row {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .mega-dropdown:hover .dropdown-menu {
-      display: block;
-    }
 
-    /* Google Button */
-    .btn-google {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      color: #444;
-      font-weight: 500;
-    }
-    .btn-google:hover {
-      background-color: #f8f9fa;
-    }
-    .btn-google img {
-      width: 20px;
-      margin-right: 8px;
-    }
-    .or-divider {
-      display: flex;
-      align-items: center;
-      text-align: center;
-      margin: 15px 0;
-    }
-    .or-divider::before,
-    .or-divider::after {
-      content: "";
-      flex: 1;
-      border-bottom: 1px solid #ddd;
-    }
-    .or-divider:not(:empty)::before {
-      margin-right: .75em;
-    }
-    .or-divider:not(:empty)::after {
-      margin-left: .75em;
-    }
-  </style>
+<style>
+/* 🟤 Base Theme Colors */
+:root {
+  --brown-dark: #3e2723;
+  --brown-medium: #5d4037;
+  --brown-light: #91756b;
+  --brown-accent: #d7ccc8;
+  --cream-bg: #f5f3ef;
+  --gold-accent: #c49b63;
+}
+
+/* 🌟 Navbar */
+.navbar {
+  background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
+  padding: 0.8rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+.navbar-brand {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold-accent) !important;
+  letter-spacing: 1px;
+}
+.navbar-brand:hover {
+  color: #fff !important;
+}
+.navbar .nav-link,
+.navbar .btn {
+  color: var(--cream-bg) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.navbar .nav-link:hover {
+  color: var(--gold-accent) !important;
+}
+.navbar .btn-outline-primary {
+  border: 1px solid var(--gold-accent);
+  color: var(--gold-accent);
+}
+.navbar .btn-outline-primary:hover {
+  background: var(--gold-accent);
+  border-color: var(--gold-accent);
+  color: var(--brown-dark);
+}
+
+/* 🔍 Search Bar */
+form.d-flex input[type="search"] {
+  border-radius: 30px;
+  border: none;
+  padding-left: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+form.d-flex input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(196,155,99,0.4);
+}
+form.d-flex button {
+  border-radius: 30px;
+  background: var(--gold-accent);
+  border: none;
+  transition: all 0.3s ease;
+}
+form.d-flex button:hover {
+  background: #b3884a;
+}
+
+/* 🛍️ Category Bar */
+.bg-white.border-bottom {
+  background: var(--cream-bg) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.nav.justify-content-center .nav-link {
+  color: var(--brown-dark) !important;
+  font-weight: 600;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+.nav.justify-content-center .nav-link:hover {
+  color: var(--gold-accent) !important;
+  transform: translateY(-2px);
+}
+
+/* 🧾 Mega Dropdown */
+.mega-dropdown .dropdown-menu {
+  width: 800px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+  padding: 20px;
+  background: #fff;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.mega-menu .row {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.mega-dropdown:hover .dropdown-menu {
+  display: block;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ⚙️ Modal */
+.modal-content {
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-header {
+  background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
+  color: var(--gold-accent);
+  border-bottom: none;
+}
+.modal-header .btn-close {
+  filter: brightness(200%);
+}
+.modal-body {
+  padding: 2rem;
+  background: var(--cream-bg);
+}
+
+/* 🧾 Auth Tabs */
+.nav-tabs .nav-link {
+  color: var(--brown-medium);
+  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.nav-tabs .nav-link.active {
+  border-bottom: 2px solid var(--brown-medium);
+  color: var(--brown-dark);
+}
+
+/* 🧍 Form Styling */
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+.form-control:focus {
+  border-color: var(--brown-medium);
+  box-shadow: 0 0 5px rgba(93,64,55,0.4);
+}
+.btn-success {
+  background: linear-gradient(90deg, #8d6e63, #a1887f);
+  border: none;
+  transition: all 0.3s ease;
+}
+.btn-success:hover {
+  background: linear-gradient(90deg, #795548, #a1887f);
+}
+.btn-primary {
+  background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
+  border: none;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
+}
+.btn-google {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #444;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.btn-google:hover {
+  background-color: #f1f1f1;
+  transform: translateY(-2px);
+}
+.btn-google img {
+  width: 20px;
+  margin-right: 8px;
+}
+
+/* ⚡ Username Feedback */
+#register-username-status {
+  font-size: 0.9em;
+  margin-top: 5px;
+  display: block;
+}
+.text-danger { color: crimson !important; }
+.text-success { color: #4caf50 !important; }
+
+/* ✨ OTP Modal */
+#verifyOtpModal .modal-header {
+  background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
+  color: #fff;
+}
+#verifyOtpModal .btn-success {
+  background: linear-gradient(90deg, var(--gold-accent), var(--brown-medium));
+  border: none;
+}
+#verifyOtpModal .btn-success:hover {
+  background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
+}
+
+/* 🪄 Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+button:hover, .btn:hover {
+  animation: pulse 0.3s ease-in-out;
+}
+
+.text-main {
+  color: var(--brown-light) !important;
+}
+  .dropdown-toggle::after {
+    display: none !important;
+  }
+  .profile-icon:hover i {
+    color: #dc3545;
+    transform: scale(1.1);
+    transition: 0.2s;
+  }
+</style>
+
 </head>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top px-4 py-2">
+<nav class=" navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top px-4 py-2">
   <div class="container-fluid">
-
-    <!-- Logo -->
     <% if (currUser && currUser.role !== "user") { %>
-      <a class="navbar-brand fw-bold text-primary" href="/resource">Rent Hub</a>
+      <a class="navbar-brand fw-bold text-main " href="/resource">Rent Hub</a>
     <% } else { %>
-      <a class="navbar-brand fw-bold text-primary" href="/">Rent Hub</a>
+      <a class="navbar-brand fw-bold text-main" href="/">Rent Hub</a>
     <% } %>
 
     <!-- Search Bar -->
@@ -76,7 +249,21 @@
     <!-- Right Side -->
     <div class="d-flex gap-3 align-items-center">
       <% if (currUser) { %>
-        <span class="fw-semibold">Hi, <%= currUser.username %></span>
+<div class="dropdown ms-auto">
+  <button class="btn border-0 bg-transparent dropdown-toggle p-0" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-user-circle fa-2x"></i>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+    <li class="dropdown-header text-center fw-bold text-dark">
+      <%= currUser.username %>
+    </li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="/profile">Profile</a></li>
+    <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+  </ul>
+</div>
+
         <a class="nav-link text-danger" href="/user/logout">Logout</a>
       <% } else { %>
         <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
@@ -117,7 +304,7 @@
             <form action="/user/login" method="POST">
               <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="text" name="username" class="form-control" required>
+                <input type="text" id="loginUsername" name="username" class="form-control" required>
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
@@ -139,8 +326,9 @@
           <div class="tab-pane fade" id="register">
             <form action="/user/registeredUser" method="POST">
               <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" name="username" required>
+                <label for="registerUsername" class="form-label">Username</label>
+                <input type="text" id="registerUsername" class="form-control" name="username" required>
+                <small id="register-username-status"></small>
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -178,6 +366,7 @@
       <div class="modal-body">
         <form action="/user/verify-otp" method="POST">
           <input type="hidden" name="email" id="otpEmail" value="">
+          <input type="hidden" name="username" id="otpUsername" value="">
           <div class="mb-3">
             <label for="otp" class="form-label">Enter OTP</label>
             <input type="text" class="form-control" name="otp" required>
@@ -188,6 +377,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 <!-- Category Bar -->
 <div class="bg-white border-bottom">
@@ -217,6 +409,7 @@
   </ul>
 </div>
 
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -240,9 +433,48 @@
     // Auto open OTP modal
     if (urlParams.get("showVerifyOtp") === "true") {
       const email = urlParams.get("email") || "";
+      const username = urlParams.get("username") || "";
       document.getElementById("otpEmail").value = email;
+      document.getElementById("otpUsername").value = username;
       const otpModal = new bootstrap.Modal(document.getElementById("verifyOtpModal"));
       otpModal.show();
     }
   });
 </script>
+<!-- ⚡ Socket.io username check -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  const usernameInput = document.getElementById("registerUsername");
+  const statusText = document.getElementById("register-username-status");
+
+  if (usernameInput) {
+    usernameInput.addEventListener("input", () => {
+      const username = usernameInput.value.trim();
+      if (username.length > 0) {
+        socket.emit("checkUsername", username);
+      } else {
+        statusText.textContent = "";
+        usernameInput.classList.remove("text-success", "text-danger");
+      }
+    });
+  }
+
+  socket.on("usernameStatus", (data) => {
+    if (data.exists) {
+      statusText.textContent = "⚠️ Username already exists!";
+      statusText.classList.remove("text-success");
+      statusText.classList.add("text-danger");
+      usernameInput.classList.add("text-danger");
+      usernameInput.classList.remove("text-success");
+    } else {
+      statusText.textContent = "✅ Username available!";
+      statusText.classList.remove("text-danger");
+      statusText.classList.add("text-success");
+      usernameInput.classList.add("text-success");
+      usernameInput.classList.remove("text-danger");
+    }
+  });
+</script>
+
