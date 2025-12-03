@@ -225,18 +225,36 @@ button:hover, .btn:hover {
     transform: scale(1.1);
     transition: 0.2s;
   }
+  .navbar .nav-link, .navbar .btn {
+    color: #967a66 !important;
+    font-weight: 500;
+    transition: all 0.3s 
+ease;
+}
 </style>
 
 </head>
 
 <!-- Navbar -->
-<nav class=" navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top px-4 py-2">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top px-4 py-2">
   <div class="container-fluid">
+
+    <!-- Brand -->
     <% if (currUser && currUser.role !== "user") { %>
-      <a class="navbar-brand fw-bold text-main " href="/resource">Rent Hub</a>
+      <a class="navbar-brand fw-bold text-main" href="/resource">Rent Hub</a>
     <% } else { %>
       <a class="navbar-brand fw-bold text-main" href="/">Rent Hub</a>
     <% } %>
+
+    <!-- Nav Links -->
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/store"><i class="fa fa-store"></i> Shops</a>
+      </li>
+    </ul>
 
     <!-- Search Bar -->
     <form class="d-flex mx-auto w-50" action="/search" method="get">
@@ -246,36 +264,69 @@ button:hover, .btn:hover {
       </button>
     </form>
 
-    <!-- Right Side -->
+    <!-- Right Section -->
     <div class="d-flex gap-3 align-items-center">
+
       <% if (currUser) { %>
-<div class="dropdown ms-auto">
-  <button class="btn border-0 bg-transparent dropdown-toggle p-0" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fa-solid fa-user-circle fa-2x"></i>
-  </button>
 
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-    <li class="dropdown-header text-center fw-bold text-dark">
-      <%= currUser.username %>
-    </li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="/profile">Profile</a></li>
-    <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-  </ul>
-</div>
-
-        <a class="nav-link text-danger" href="/user/logout">Logout</a>
-      <% } else { %>
-        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-          Login / Sign Up
+      <!-- Profile Dropdown -->
+      <div class="dropdown ms-auto">
+        <button class="btn border-0 bg-transparent dropdown-toggle p-0" id="profileMenu" data-bs-toggle="dropdown">
+          <i class="fa-solid fa-user-circle fa-2x"></i>
         </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+          <li class="dropdown-header text-center fw-bold text-dark">
+            <%= currUser.username %>
+          </li>
+
+          <li><hr class="dropdown-divider"></li>
+
+          <li><a class="dropdown-item" href="/profile">Profile</a></li>
+
+          <!-- Become Seller / Seller Dashboard -->
+          <% if (currUser.role !== 'seller') { %>
+            <li><a class="dropdown-item" href="/seller/register">Become a seller</a></li>
+          <% } else { %>
+            <li><a class="dropdown-item" href="/seller/dashboard">Seller Dashboard</a></li>
+          <% } %>
+
+          <!-- Add Product for sellers / Admin dashboard for others -->
+          <% if (currUser.role === 'seller') { %>
+            <li><a class="dropdown-item text-success" href="/resource">Add Product</a></li>
+          <% } else if (currUser.role === 'admin') { %>
+            <li><a class="dropdown-item text-success" href="/resource">Admin Dashboard</a></li>
+          <% } %>
+
+          <!-- Logout -->
+          <li><a class="dropdown-item text-danger" href="/user/logout">Logout</a></li>
+
+        </ul>
+      </div>
+
+      <!-- Username Display -->
+      <span class="fw-semibold text-main"><%= currUser.username %></span>
+
+      <% } else { %>
+
+      <!-- Login Button -->
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+        Login / Sign Up
+      </button>
+
       <% } %>
+
+      <!-- Cart -->
       <a class="nav-link" href="/cart/view">
         <i class="fa fa-shopping-cart"></i> Cart
       </a>
+
     </div>
+
   </div>
 </nav>
+
 
 <!-- 🔽 Login / Sign Up Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
@@ -477,4 +528,3 @@ button:hover, .btn:hover {
     }
   });
 </script>
-

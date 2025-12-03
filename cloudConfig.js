@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: "PROJECT2",
-        allowed_formats: ["png", "jpg", "jpeg","avif"] // ✅ fixed typo here
+        allowed_formats: ["png", "jpg", "jpeg","avif","webp"] // ✅ fixed typo here
     }
 });
 

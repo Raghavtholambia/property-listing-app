@@ -28,23 +28,27 @@ const userSchema = new Schema({
   verificationOtp: String,
   otpExpires: Date,
 
-  // 👇 added for profile section
-  fullName: String,
-  bio: String,
-  phone: String,
-  address: String,
+  // 👇 profile details
+  fullName: { type: String, required: false },
+  bio: { type: String, required: false },
+  phone: { type: String, required: false },
+  address: { type: String, required: false },
+
+  // 👇 location fields
+  latitude: { type: Number, required: false },
+  longitude: { type: Number, required: false },
+
+  // 👇 Cloudinary profile image
   profileImage: {
     type: String,
-    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png", // default avatar
+    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
   },
-});
+}, { timestamps: true });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
-
-
 
 
 

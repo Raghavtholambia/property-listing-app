@@ -21,8 +21,10 @@
             <% users.forEach(user => { %>
               <li class="list-group-item d-flex justify-content-between align-items-center" id="user-<%= user._id %>">
                 <span>
-                  <i class="fa fa-user-circle text-primary"></i> 
-                  <%= user.username %> - <%= user.email %>
+                  <a href="/admin/user/<%= user._id %>" class="text-decoration-none">
+                    <i class="fa fa-user-circle text-primary"></i> 
+                    <%= user.username %> - <%= user.email %>
+                  </a>
                 </span>
                 <button class="btn btn-sm btn-danger delete-btn" data-id="<%= user._id %>">
                   <i class="fa fa-trash"></i> Delete
@@ -102,13 +104,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <script>
-  // Toggle show/hide section
+  // ✅ Toggle show/hide section
   function toggleSection(id) {
     const el = document.getElementById(id);
     el.style.display = (el.style.display === "none") ? "block" : "none";
   }
 
-  // Handle delete buttons
+  // ✅ Handle delete buttons (no refresh)
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".delete-btn").forEach(btn => {
       btn.addEventListener("click", async () => {

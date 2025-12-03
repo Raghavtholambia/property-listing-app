@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Seller | Rentify</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      padding: 10px 50px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #2874f0;
+      font-size: 20px;
+    }
+    nav .menu {
+      display: flex;
+      gap: 20px;
+    }
+    nav .menu a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    nav .menu a:hover {
+      color: #2874f0;
+    }
+    nav .right button {
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    nav .right button:hover {
+      background: #1a5dc8;
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f2f7ff;
+      padding: 60px 20px;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .hero-text {
+      max-width: 500px;
+    }
+    .hero-text h1 {
+      font-size: 38px;
+      color: #2874f0;
+      font-weight: 700;
+    }
+    .hero-text p {
+      color: #555;
+      margin-top: 10px;
+    }
+    .hero img {
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    /* Stats Section */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      background: white;
+      padding: 30px 20px;
+      border-top: 1px solid #eee;
+    }
+    .stats div {
+      text-align: center;
+    }
+    .stats h2 {
+      color: #2874f0;
+      margin-bottom: 5px;
+    }
+
+    /* Why Sellers Love Section */
+    .why-sell {
+      text-align: center;
+      padding: 60px 20px;
+      background: #fff;
+    }
+    .why-sell h2 {
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .why-sell p {
+      color: #666;
+      margin: 10px auto 40px;
+      max-width: 700px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 50px;
+    }
+    .feature-card {
+      background: #f8f9ff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    .feature-card h3 {
+      color: #2874f0;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    /* Contact Form */
+    .contact {
+      background: #f5f7ff;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .contact h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .contact p {
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .contact form {
+      max-width: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .contact input, .contact select, .contact textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Poppins';
+    }
+    .contact button {
+      background: #2874f0;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .contact button:hover {
+      background: #1a5dc8;
+    }
+
+    /* Footer */
+    footer {
+      background: #212121;
+      color: #fff;
+      padding: 40px 50px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    footer h4 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    footer a:hover {
+      color: #fff;
+    }
+    /* ✅ Modal Styling */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-content p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.submit-btn {
+  background: #ff4b2b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  background: #ff6a48;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <i class="fa-solid fa-store"></i> Rentify Seller Hub
+    </div>
+    <div class="menu">
+      <a href="#">Sell Online</a>
+      <a href="#">Fees</a>
+      <a href="#">Grow</a>
+      <a href="#">Learn</a>
+    </div>
+    <div class="right">
+      <button>Start Selling</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Get Ready to Rentify!</h1>
+      <p>Start renting or selling your products with Rentify. Join thousands of sellers and reach millions of customers easily!</p>
+    </div>
+    <img src="https://cdn.pixabay.com/photo/2017/08/30/11/26/boxes-2698199_1280.jpg" alt="Sell Online">
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div>
+      <h2>14K+</h2>
+      <p>Seller Community</p>
+    </div>
+    <div>
+      <h2>24x7</h2>
+      <p>Online Business</p>
+    </div>
+    <div>
+      <h2>7 Days</h2>
+      <p>Easy Payouts</p>
+    </div>
+    <div>
+      <h2>19000+</h2>
+      <p>Pincodes Served</p>
+    </div>
+  </div>
+
+  <!-- Why Sell Section -->
+  <section class="why-sell">
+    <h2>Why do sellers love using Rentify?</h2>
+    <p>Millions of users trust Rentify for their rental and sales business. Reach wider audiences and grow your business effortlessly.</p>
+    <div class="features">
+      <div class="feature-card">
+        <h3>🚀 Opportunity</h3>
+        <p>Reach millions of customers across thousands of pin codes in India.</p>
+      </div>
+      <div class="feature-card">
+        <h3>💼 Easy to Start</h3>
+        <p>Create your Rentify seller account in under 10 minutes.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📈 Growth</h3>
+        <p>Get analytics, boost visibility, and grow faster with Rentify tools.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔧 Support</h3>
+        <p>24x7 customer and technical support for all your business needs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form -->
+  <section class="contact">
+    <h2>We are happy to help you 😊</h2>
+    <p>Still have questions? Drop your query below!</p>
+    <form>
+      <input type="text" placeholder="Enter Full Name" required>
+      <input type="text" placeholder="Enter Mobile Number / Email ID" required>
+      <select required>
+        <option value="">Select a Topic</option>
+        <option>Seller Registration</option>
+        <option>Product Listing</option>
+        <option>Renting Process</option>
+      </select>
+      <textarea placeholder="Type your message" rows="4" required></textarea>
+      <button type="submit">Send Query</button>
+    </form>
+  </section>
+  <!-- ✅ Become Seller Modal -->
+<div id="sellerModal" class="modal-overlay">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Become a Seller</h2>
+    <p>Fill in your business details below to start selling on Rentify 🚀</p>
+
+    <form action="/seller/register" method="POST" id="sellerForm">
+      <div class="form-group">
+        <label>Business Name</label>
+        <input type="text" name="businessName" required>
+      </div>
+
+      <div class="form-group">
+        <label>GST Number (optional)</label>
+        <input type="text" name="gstNumber">
+      </div>
+
+      <div class="form-group">
+        <label>Shop Address</label>
+        <input type="text" name="shopAddress" required>
+      </div>
+
+      <div class="form-group">
+        <label>Contact Number</label>
+        <input type="text" name="contactNumber" required>
+      </div>
+
+      <div class="form-group">
+        <label>Business Email</label>
+        <input type="email" name="businessEmail" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit & Become Seller</button>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <h4>Sell Online</h4>
+      <a href="#">Create Account</a>
+      <a href="#">List Products</a>
+      <a href="#">Storage & Shipping</a>
+    </div>
+    <div>
+      <h4>Grow Your Business</h4>
+      <a href="#">Insights & Tools</a>
+      <a href="#">Rentify Ads</a>
+      <a href="#">Seller Support</a>
+    </div>
+    <div>
+      <h4>Learn More</h4>
+      <a href="#">FAQs</a>
+      <a href="#">Seller Stories</a>
+      <a href="#">Blogs</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<script>
+  const startSellingBtn = document.querySelector('.right button');
+  const modal = document.getElementById('sellerModal');
+  const closeBtn = document.querySelector('.close-btn');
+
+  startSellingBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+</script>

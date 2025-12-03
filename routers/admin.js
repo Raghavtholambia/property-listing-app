@@ -48,6 +48,26 @@ router.delete("/admin/users/:id", isAdmin, async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to delete user" });
   }
 });
+// ✅ Admin View Any User Profile
+router.get("/admin/user/:id", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+     
+
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/admin");
+    }
+
+    res.render("profile", { currUser: user, apiKey: process.env.GOOGLE_API_KEY });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Error loading user profile");
+    res.redirect("/admin");
+  }
+});
+
 
 
 module.exports = router;

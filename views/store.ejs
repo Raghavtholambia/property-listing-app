@@ -1,173 +1,308 @@
+<%- include('./components/header.ejs') %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title><%= seller.username %>'s Store 🏪</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title><%= store.shopName %> | Store 🏪</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
   <style>
     body {
       background: #f8f9fa;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .store-header {
-      text-align: center;
-      margin: 2rem 0;
-    }
-    .store-header h1 {
-      font-weight: 700;
-      color: #dc3545;
-    }
-    .product-card {
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-    }
-    .product-card:hover {
-      transform: translateY(-8px);
-    }
-    .product-img {
-      height: 200px;
-      object-fit: contain;
+    .container { flex: 1; }
+
+    /* =========================================
+       STORE BANNER (NOT TOUCHING AS REQUESTED)
+    ==========================================*/
+    .store-banner {
       width: 100%;
+      height: 280px;
+      border-radius: 18px;
+      margin: 25px 0;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      position: relative;
     }
-    .card-body {
-      text-align: center;
+    .store-banner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
     }
-    .btn-edit { background: #0d6efd; color: #fff; }
-    .btn-delete { background: #dc3545; color: #fff; }
-  </style>
-    <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f8fc;
-      margin: 0;
-      padding: 0;
+    .edit-icon {
+      position: absolute; top: 12px; right: 12px;
+      background: white;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
     }
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 50px 20px;
-      text-align: center;
+
+    /* =========================================
+       LOGO + INFO (NOT TOUCHING AS REQUESTED)
+    ==========================================*/
+    .store-info-box {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      margin-top: -60px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      position: relative;
     }
-    .container h2 {
-      font-size: 2rem;
-      margin-bottom: 40px;
+    .shop-logo {
+      width: 130px; height: 130px;
+      border-radius: 50%; overflow: hidden;
+      border: 5px solid white;
+      background: white;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+      transition: 0.3s ease;
     }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 40px;
+    .shop-logo img {
+      width: 100%; height: 100%; object-fit: cover;
     }
-    .feature {
-      text-align: center;
+
+    /* =========================================
+       NEW AIRBNB LISTING CARD DESIGN
+    ==========================================*/
+    .listing-card {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      transition: 0.25s ease;
     }
-    .feature img {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 15px;
+    .listing-card:hover {
+      transform: translateY(-4px);
     }
-    .feature h3 {
+
+    .listing-img {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .listing-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.4s ease-in-out;
+    }
+    .listing-card:hover img {
+      transform: scale(1.08);
+      
+      box-shadow: 0px 8px 24px rgba(229, 25, 25, 0.12);
+
+    }
+
+    /* Category Badge */
+    .category-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.7);
+      padding: 6px 14px;
+      color: white;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Heart icon like Airbnb */
+    .heart-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.8);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.2rem;
-      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
     }
-    .feature p {
+    .heart-btn:hover {
+      background: white;
+    }
+
+    /* Content */
+    .card-body {
+      padding: 12px 14px;
+    }
+    .listing-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #111;
+    }
+    .listing-desc {
+      margin: 4px 0;
+      color: #777;
+      font-size: 0.9rem;
+      height: 38px;
+      overflow: hidden;
+    }
+
+    /* Rating */
+    .rating {
       font-size: 0.95rem;
-      color: #555;
+      color: #000;
+      font-weight: 600;
+    }
+    .rating i {
+      color: #ff385c;
+    }
+
+    /* Footer price */
+    .card-footer {
+      padding: 12px 14px;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #eee;
+    }
+    .price-tag {
+      color: #111;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .view-text {
+      color: #666;
+      font-size: 0.85rem;
     }
   </style>
-
 </head>
-<body>
-  <div class="container">
-    <!-- Seller Name -->
-    <div class="store-header">
-      <h1><%= seller.username %>'s Store 🏪</h1>
-      <p class="text-muted">All products listed by <%= seller.username %></p>
-    </div>
-    <% if(currUser  && currUser.role === "seller"){ %>
-    <div>NEW LISTING:----  <a href="/listing/new"><button>New</button>  </a></div>
-    <% } %>
 
-    <!-- Product Grid -->
-    <div class="row g-4">
+<body>
+<div class="container">
+
+  <!-- ======================= BANNER ======================= -->
+  <div class="store-banner" id="bannerDropZone">
+    <img id="bannerImg" src="<%= store.shopBanner || 'https://via.placeholder.com/1500x500' %>" />
+
+    <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
+      <div class="edit-icon"><i class="fa-solid fa-pen"></i></div>
+      <form id="bannerForm" style="display:none;" enctype="multipart/form-data">
+        <input id="bannerInput" type="file" name="banner" accept="image/*" />
+      </form>
+    <% } %>
+  </div>
+
+  <!-- ======================= INFO BOX ======================= -->
+  <div class="store-info-box">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+      <!-- logo -->
+      <div class="position-relative" id="logoDropZone">
+        <div class="shop-logo">
+          <img id="logoImg" src="<%= store.shopLogo || 'https://via.placeholder.com/200' %>" />
+        </div>
+
+        <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
+          <div class="logo-edit-icon"><i class="fa-solid fa-pen"></i></div>
+          <form id="logoForm" style="display:none;" enctype="multipart/form-data">
+            <input id="logoInput" type="file" name="logo" accept="image/*" />
+          </form>
+        <% } %>
+      </div>
+
+      <div class="mt-4 mt-md-0">
+        <h1 class="fw-bold m-0"><%= store.shopName %></h1>
+        <p class="text-muted mb-1">
+          Owned by <strong><%= owner.username %></strong>
+        </p>
+        <p class="text-muted">
+          <i class="fa-solid fa-location-dot"></i>
+          <%= store.address || "Not provided" %>
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-3 text-secondary"><%= store.description || "No shop description added." %></p>
+
+    <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
+      <a href="/listing/new" class="btn btn-success mt-2">+ Add New Listing</a>
+    <% } %>
+  </div>
+
+  <!-- ======================= PRODUCT LIST ======================= -->
+  <div class="mt-5">
+    <h3 class="fw-bold">Products from this Store</h3>
+
+    <div class="row g-4 mt-2">
+
       <% listings.forEach(listing => { %>
-        <div class="col-md-4 col-sm-6">
-          <div class="card product-card">
-            <img src="<%= listing.image.url %>" alt="<%= listing.itemName %>" class="product-img">
-            <div class="card-body">
-              <h5 class="card-title"><%= listing.itemName %></h5>
-              <p class="card-text">
-                ₹<%= listing.pricePerDay %> / day <br>
-                <small><%= listing.city %>, <%= listing.country %></small>
-              </p>
-              <a href="/listing/<%= listing._id %>/edit" class="btn btn-sm btn-edit">Edit</a>
-              <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-sm btn-delete">Delete</button>
-              </form>
+        <div class="col-12 col-sm-6 col-lg-4">
+
+          <a href="/listing/<%= listing._id %>" class="text-decoration-none">
+            <div class="listing-card">
+
+              <!-- image block -->
+              <div class="listing-img">
+                <img src="<%= listing.image.url %>" alt="">
+                <span class="category-badge"><%= listing.category %></span>
+                <div class="heart-btn"><i class="fa-regular fa-heart"></i></div>
+              </div>
+
+              <!-- content -->
+              <div class="card-body">
+                <h5 class="listing-title"><%= listing.itemName %></h5>
+
+                <p class="listing-desc"><%= listing.description %></p>
+
+                <div class="d-flex justify-content-between mt-2">
+                  <span class="rating">
+                    <i class="fa-solid fa-star"></i>
+                    <%= listing.averageRating || "0.0" %>
+                  </span>
+
+                  <span class="text-muted small">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <%= listing.city %>, <%= listing.country %>
+                  </span>
+                </div>
+              </div>
+
+              <!-- price footer -->
+              <div class="card-footer">
+                <span class="price-tag">₹ <%= listing.pricePerDay %> /day</span>
+                <span class="view-text">View details →</span>
+              </div>
+
             </div>
-          </div>
+          </a>
+
+          <!-- edit + delete -->
+          <% if(currUser && currUser._id.toString() === owner._id.toString()) { %>
+            <a href="/listing/<%= listing._id %>/edit" class="btn btn-primary btn-sm mt-2">Edit</a>
+            <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" style="display:inline;">
+              <button class="btn btn-danger btn-sm mt-2">Delete</button>
+            </form>
+          <% } %>
+
         </div>
       <% }) %>
+
     </div>
   </div>
+</div>
 
-
-
-
-   <div class="container">
-    <h2>Why list on Our Rental App?</h2>
-    <div class="features">
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/shopping-cart.png" alt="Reach Users">
-        <h3>Reach Customers Easily</h3>
-        <p>Connect with thousands of users looking to rent products near you.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/money-bag.png" alt="Earn More">
-        <h3>Extra Earnings</h3>
-        <p>Turn your idle items into extra income with flexible rental pricing.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/admin-settings-male.png" alt="Manage Profile">
-        <h3>Profile & Shop Management</h3>
-        <p>Manage your rental listings, shop profile, and clients from one dashboard.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/shipped.png" alt="Easy Returns">
-        <h3>Easy Returns</h3>
-        <p>Hassle-free returns system keeps transactions smooth and stress-free.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/calculator.png" alt="Pricing">
-        <h3>Smart Pricing Calculator</h3>
-        <p>Get suggestions for the best rental price using our pricing tool.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/customer-support.png" alt="Support">
-        <h3>24×7 Support</h3>
-        <p>Our dedicated team is here to help you with any rental-related queries.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/money-transfer.png" alt="Fast Payments">
-        <h3>Fast & Secure Payments</h3>
-        <p>Receive your rental payments quickly and securely in your account.</p>
-      </div>
-      
-      <div class="feature">
-        <img src="https://img.icons8.com/fluency/96/smartphone-tablet.png" alt="Mobile App">
-        <h3>Business on the Go</h3>
-        <p>Manage your shop and rentals easily using our mobile app anytime.</p>
-      </div>
-      
-    </div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<%- include('./components/footer.ejs') %>

@@ -27,6 +27,7 @@ const searchRoutes = require("./routers/search.js");
 const redirectBasedOnRole = require("./routers/resource.js");
 const storeRoute = require("./routers/store.js");
 const profileRoutes = require("./routers/profile");
+const sellerRoutes = require('./routers/sellerRoutes');
 
 // -------------------- Socket.IO Setup --------------------
 const app = express();
@@ -164,17 +165,45 @@ app.use(async (req, res, next) => {
 });
 
 // -------------------- Routes --------------------
+// -------------------- Routes --------------------
+
+// Admin routes
 app.use("/", adminRouter);
+
+// Cart routes
 app.use("/cart", cartRoutes);
-app.use("/user", userRoutes); // ✅ using socket-aware user router
-app.use("/", listingRouter);
-app.use("/listing/:id", reviewsRouter);
-app.use("/checkout", checkoutRoutes);
-app.use("/location", locationRoutes);
-app.use("/search", searchRoutes);
-app.use("/resource", redirectBasedOnRole);
+
+// User routes
+app.use("/user", userRoutes);
+
+// ⭐ STORE ROUTES MUST COME BEFORE LISTING ROUTES
 app.use("/store", storeRoute);
+
+// Seller routes
+app.use('/seller', sellerRoutes);
+
+// Profile routes
 app.use("/profile", profileRoutes);
+
+// Checkout
+app.use("/checkout", checkoutRoutes);
+
+// Location
+app.use("/location", locationRoutes);
+
+// Search
+app.use("/search", searchRoutes);
+
+// Resource redirect
+app.use("/resource", redirectBasedOnRole);
+
+// ⭐ LISTING ROUTES SHOULD COME LATER
+app.use("/", listingRouter);
+
+// Reviews (after listing)
+app.use("/listing/:id", reviewsRouter);
+
+
 
 
 // -------------------- Error Handling --------------------

@@ -30,10 +30,17 @@
     <textarea id="description" name="listing[description]" class="form-control" rows="3" placeholder="Write about the item" required></textarea>
   </div>
 
-  <!-- Image -->
+  <!-- Drag & Drop Image Upload -->
   <div class="mb-3">
-    <label for="image" class="form-label">Image</label>
-    <input type="file" id="image" name="listing[image]" class="form-control" accept="image/*">
+    <label class="form-label">Upload Image</label>
+
+    <div id="dropZone" 
+         style="border: 2px dashed #6c757d; padding: 30px; text-align: center; border-radius: 10px; cursor: pointer;">
+      <p class="text-muted">Drag & Drop Image Here<br>or Click to Select</p>
+    </div>
+
+    <!-- Hidden input -->
+    <input type="file" id="image" name="listing[image]" accept="image/*" style="display:none;">
   </div>
 
   <!-- Price Per Day -->
@@ -54,15 +61,14 @@
     <input type="text" id="country" name="listing[country]" class="form-control" placeholder="India" required>
   </div>
 
-  
- <!-- Location (Google Map) -->
+  <!-- Location (Google Map) -->
   <div class="mb-3">
     <label for="map" class="form-label">Shop Location</label>
     <div id="map" style="height: 300px; width: 100%; border-radius: 10px;"></div>
     <small class="text-muted">📍 Move the marker to select your shop location</small>
   </div>
 
-  <!-- hidden inputs -->
+  <!-- Hidden inputs -->
   <input type="hidden" id="latitude" name="listing[latitude]">
   <input type="hidden" id="longitude" name="listing[longitude]">
   <input type="hidden" id="address" name="listing[address]">
@@ -78,9 +84,50 @@
 
 <!-- Google Maps Script -->
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&libraries=places"></script>
+
 <script>
+  ////////////////////////////////
+  // DRAG & DROP IMAGE FUNCTION //
+  ////////////////////////////////
+
+  const dropZone = document.getElementById("dropZone");
+  const fileInput = document.getElementById("image");
+
+  dropZone.addEventListener("click", () => fileInput.click());
+
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.style.background = "#f1f1f1";
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.style.background = "transparent";
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.style.background = "transparent";
+
+    if (e.dataTransfer.files.length > 0) {
+      fileInput.files = e.dataTransfer.files;
+
+      dropZone.innerHTML = `<p><strong>${e.dataTransfer.files[0].name}</strong> selected</p>`;
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      dropZone.innerHTML = `<p><strong>${fileInput.files[0].name}</strong> selected</p>`;
+    }
+  });
+
+
+  ////////////////////////////////
+  // GOOGLE MAPS LOCATION CODE  //
+  ////////////////////////////////
+
   function initMap() {
-    const defaultLocation = { lat: 28.6139, lng: 77.2090 }; // fallback (Delhi)
+    const defaultLocation = { lat: 28.6139, lng: 77.2090 }; // fallback Delhi
     const map = new google.maps.Map(document.getElementById("map"), {
       zoom: 12,
       center: defaultLocation,
@@ -94,12 +141,11 @@
 
     const geocoder = new google.maps.Geocoder();
 
-    // function to update hidden inputs
+    // Update hidden inputs
     function updatePosition(lat, lng) {
       document.getElementById("latitude").value = lat;
       document.getElementById("longitude").value = lng;
 
-      // reverse geocode → get human readable address
       geocoder.geocode({ location: { lat, lng } }, (results, status) => {
         if (status === "OK" && results[0]) {
           document.getElementById("address").value = results[0].formatted_address;
@@ -107,7 +153,7 @@
       });
     }
 
-    // ✅ Use current location if available
+    // Use user location if permission allowed
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -115,22 +161,21 @@
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           };
+
           map.setCenter(userLocation);
           map.setZoom(15);
           marker.setPosition(userLocation);
           updatePosition(userLocation.lat, userLocation.lng);
         },
         () => {
-          console.warn("⚠️ Location permission denied, using default Delhi");
           updatePosition(defaultLocation.lat, defaultLocation.lng);
         }
       );
     } else {
-      console.warn("⚠️ Geolocation not supported, using default Delhi");
       updatePosition(defaultLocation.lat, defaultLocation.lng);
     }
 
-    // ✅ Update when marker is dragged
+    // When marker moves
     google.maps.event.addListener(marker, "dragend", () => {
       const pos = marker.getPosition();
       updatePosition(pos.lat(), pos.lng());

@@ -11,7 +11,8 @@ const listing = require("./models/listing.js")
 
 // middleware.js
 module.exports.isLoggedIn = (req, res, next) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
+    if (!req.isAuthenticated() ) 
+ {
         req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in to continue.");
         // Instead of redirecting to /user/login, go back to home with a query flag

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const reviews = require('./review');
+const User = require("./users");
 const listingSchema = new Schema({
   category: {
     type: String,
@@ -62,6 +63,25 @@ listingSchema.methods.updateAverageRating = async function () {
   }
   await this.save();
 };
+
+
+
+// 🧹 Auto-remove listings whose owner no longer exists
+listingSchema.post("find", async function (listings) {
+  for (let listing of listings) {
+    if (!listing.owner) continue;
+
+    const userExists = await User.findById(listing.owner);
+    const listingExists = await Listing.findById(listing._id);
+
+    if (!userExists || !listingExists) {
+      await Listing.findByIdAndDelete(listing._id);
+      console.log(`⛔ Deleted listing ${listing._id} — owner not found`);
+    }
+  }
+});
+
+ 
 
 
 const Listing = mongoose.model("Listing", listingSchema);

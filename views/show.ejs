@@ -115,7 +115,7 @@ p {
 
           <!-- Owner -->
           <p class="text-muted small mb-2">
-            Owned by: <strong><%= clickListing.owner.username  %></strong>
+            Owned by: <a href="/store/<%=clickListing.owner._id %>"><strong><%= clickListing.owner.username  %></strong></a>
           </p>
 
           <!-- Location -->
@@ -354,3 +354,5 @@ p {
   </script>
   </body>
 </html>
+
+<%- include('./components/footer.ejs') %>

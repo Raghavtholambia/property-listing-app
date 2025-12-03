@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Property</title>
+
   <style>
     #upload-loader {
       position: fixed;
@@ -30,9 +31,23 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* Drag and drop */
+    #dropZone {
+      border: 2px dashed #6c757d;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #dropZone.dragover {
+      background: #f1f1f1;
+    }
   </style>
 </head>
 <body>
+
   <div id="upload-loader" style="display: none;">
     <div class="spinner"></div>
   </div>
@@ -78,10 +93,16 @@
                 </div>
               <% } %>
 
-              <!-- Upload New Image -->
+              <!-- ⭐ NEW DRAG & DROP IMAGE UPLOAD ⭐ -->
               <div class="mb-3">
                 <label class="form-label">Replace Image</label>
-                <input type="file" name="listing[image]" class="form-control" accept="image/*" />
+
+                <div id="dropZone">
+                  <p class="text-muted mb-0">Drag & Drop Image Here<br>or Click to Select</p>
+                </div>
+
+                <!-- Hidden file input -->
+                <input type="file" id="image" name="listing[image]" accept="image/*" style="display:none;">
               </div>
 
               <!-- Price -->
@@ -102,7 +123,7 @@
                 <input type="text" name="listing[country]" class="form-control" value="<%= newListing.country || '' %>" />
               </div>
 
-              <!-- Address (detected) -->
+              <!-- Address (Detected) -->
               <div class="mb-3">
                 <label class="form-label">Detected Address</label>
                 <input type="text" id="address-display" class="form-control" value="<%= newListing.address || '' %>" readonly />
@@ -125,6 +146,7 @@
                   <i class="bi bi-pencil-square me-2"></i> Update Property
                 </button>
               </div>
+
             </form>
 
           </div>
@@ -133,46 +155,84 @@
     </div>
   </div>
 
-
-  
-
-  <!-- Google Maps -->
+<!-- Google Maps -->
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&libraries=places&callback=initMap" async defer></script>
-  <script>
-    let map, marker;
 
-    function initMap() {
-      const lat = parseFloat(document.getElementById("latitude").value) || 28.6139; // fallback: Delhi
-      const lng = parseFloat(document.getElementById("longitude").value) || 77.2090;
+<script>
+  ////////////////////////////////
+  // ⭐ DRAG & DROP IMAGE JS ⭐ //
+  ////////////////////////////////
 
-      const latlng = { lat, lng };
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: latlng,
-        zoom: 15,
-      });
+  const dropZone = document.getElementById("dropZone");
+  const fileInput = document.getElementById("image");
 
-      marker = new google.maps.Marker({
-        position: latlng,
-        map,
-        draggable: true,
-      });
+  dropZone.addEventListener("click", () => fileInput.click());
 
-      // Update fields when marker dragged
-      const geocoder = new google.maps.Geocoder();
-      google.maps.event.addListener(marker, "dragend", function (event) {
-        document.getElementById("latitude").value = event.latLng.lat();
-        document.getElementById("longitude").value = event.latLng.lng();
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  });
 
-        geocoder.geocode({ location: event.latLng }, (results, status) => {
-          if (status === "OK" && results[0]) {
-            document.getElementById("address").value = results[0].formatted_address;
-            document.getElementById("address-display").value = results[0].formatted_address;
-          }
-        });
-      });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    fileInput.files = e.dataTransfer.files;
+
+    dropZone.innerHTML = `<p><strong>${e.dataTransfer.files[0].name}</strong> selected</p>`;
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      dropZone.innerHTML = `<p><strong>${fileInput.files[0].name}</strong> selected</p>`;
     }
+  });
 
-    window.initMap = initMap;
-  </script>
+
+
+  //////////////////////////
+  // ⭐ GOOGLE MAP LOGIC ⭐ //
+  //////////////////////////
+
+  let map, marker;
+
+  function initMap() {
+    const lat = parseFloat(document.getElementById("latitude").value) || 28.6139;
+    const lng = parseFloat(document.getElementById("longitude").value) || 77.2090;
+
+    const latlng = { lat, lng };
+
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: latlng,
+      zoom: 15,
+    });
+
+    marker = new google.maps.Marker({
+      position: latlng,
+      map,
+      draggable: true,
+    });
+
+    const geocoder = new google.maps.Geocoder();
+
+    google.maps.event.addListener(marker, "dragend", (event) => {
+      document.getElementById("latitude").value = event.latLng.lat();
+      document.getElementById("longitude").value = event.latLng.lng();
+
+      geocoder.geocode({ location: event.latLng }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          document.getElementById("address").value = results[0].formatted_address;
+          document.getElementById("address-display").value = results[0].formatted_address;
+        }
+      });
+    });
+  }
+
+  window.initMap = initMap;
+</script>
+
 </body>
 </html>

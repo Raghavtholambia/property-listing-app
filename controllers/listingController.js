@@ -53,34 +53,53 @@ module.exports.renderNewForm = (req, res) => {
   
   if (res.locals.currUser.role !== "admin"&& res.locals.currUser.role !== "seller") {
     req.flash("error","you are not registered as seller");
-    res.redirect("/", { apiKey: res.locals.googleApiKey });
+    return res.redirect("/", { apiKey: res.locals.googleApiKey });
   }
-  else
+  
   res.render("new",{ apiKey: res.locals.googleApiKey });
 };
 
 module.exports.getSingleListing = async (req, res) => {
-  const { id } = req.params;
-  const clickListing = await Listing.findById(id)
-    .populate({
-      path: "reviews",
-      populate: { path: "author" }
-    })
-    .populate("owner");
+  try {
+    const { id } = req.params;
 
-  if (!clickListing) {
-    req.flash("error", "Listing not found");
-    return res.redirect("/", { apiKey: res.locals.googleApiKey });
+    // Fetch listing + reviews + owner
+    const clickListing = await Listing.findById(id)
+      .populate({
+        path: "reviews",
+        populate: { path: "author" }
+      })
+      .populate("owner");
+
+    if (!clickListing) {
+      req.flash("error", "Listing not found");
+      return res.redirect("/", { apiKey: res.locals.googleApiKey });
+    }
+
+    // ⭐ Calculate average rating
+    let avgRating = 0;
+    if (clickListing.reviews.length > 0) {
+      const total = clickListing.reviews.reduce(
+        (sum, r) => sum + r.rating,
+        0
+      );
+      avgRating = total / clickListing.reviews.length;
+    }
+
+
+    // Render page
+    res.render("Show", { 
+      clickListing, 
+      avgRating, 
+      apiKey: res.locals.googleApiKey,
+      
+    });
+
+  } catch (err) {
+    console.error("Error loading single listing:", err);
+    req.flash("error", "Something went wrong");
+    return res.redirect("/");
   }
-
-  // ✅ calculate avg rating
-  let avgRating = 0;
-  if (clickListing.reviews.length > 0) {
-    const total = clickListing.reviews.reduce((sum, r) => sum + r.rating, 0);
-    avgRating = total / clickListing.reviews.length;
-  }
-
-  res.render("Show", { clickListing, avgRating,apiKey: res.locals.googleApiKey});
 };
 
 
