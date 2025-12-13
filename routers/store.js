@@ -121,15 +121,28 @@ router.put("/:storeId", isLoggedIn, async (req, res) => {
 router.get("/:identifier", async (req, res) => {
   const { identifier } = req.params;
 
-  let store = await Store.findOne({ slug: identifier }).populate("owner");
+  let store = await Store.findOne({ slug: identifier })
+    .populate("owner")
+    .lean(false)
+    .exec();
 
   if (!store) {
-    store = await Store.findOne({ owner: identifier }).populate("owner");
+    store = await Store.findOne({ owner: identifier })
+      .populate("owner")
+      .lean(false)
+      .exec();
   }
 
   if (!store) {
     return res.status(404).send("Store not found");
   }
+
+  // Force reload from DB (100% fresh)
+  store = await Store.findById(store._id)
+    .populate("owner")
+    .exec();
+
+  console.log("⭐ FRESH STORE:", store);
 
   const listings = await Listing.find({ owner: store.owner._id });
 
@@ -140,5 +153,6 @@ router.get("/:identifier", async (req, res) => {
     currUser: req.user
   });
 });
+
 
 module.exports = router;

@@ -2,25 +2,31 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const reviews = require('./review');
 const User = require("./users");
+
 const listingSchema = new Schema({
   category: {
     type: String,
     enum: ["Accessories", "Electronics", "Home Appliance", "Furniture", "Others"],
     required: true,
   },
+
   itemName: {
     type: String,
     required: true,
   },
+
   description: String,
+
   image: {
     url: String,
     filename: String,
   },
+
   pricePerDay: {
     type: Number,
     required: true,
   },
+
   city: String,
   country: String,
   latitude: Number,
@@ -44,6 +50,18 @@ const listingSchema = new Schema({
     type: Number,
     default: 0,
   },
+
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    required: true
+  },
+
+  // ⭐ NEW FIELD — listing must be approved by admin
+  verifiedByAdmin: {
+    type: Boolean,
+    default: false
+  }
 });
 
 // delete reviews when listing deleted
@@ -64,8 +82,6 @@ listingSchema.methods.updateAverageRating = async function () {
   await this.save();
 };
 
-
-
 // 🧹 Auto-remove listings whose owner no longer exists
 listingSchema.post("find", async function (listings) {
   for (let listing of listings) {
@@ -80,9 +96,6 @@ listingSchema.post("find", async function (listings) {
     }
   }
 });
-
- 
-
 
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;

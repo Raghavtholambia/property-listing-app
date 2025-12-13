@@ -2,71 +2,79 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const passportLocalMongoose = require('passport-local-mongoose');
 
+// Store-specific coins
+const spCoinSchema = new Schema({
+  storeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    required: true
+  },
+  storeName: {
+    type: String,
+    required: true
+  },
+
+  listingId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Listing",
+    default: null
+  }
+});
+
 const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+  username: { type: String, required: true, unique: true, trim: true },
+  email: { type: String, required: true, trim: true },
+
   role: {
     type: String,
-    enum: ['user', 'admin', 'seller'],
-    default: 'user',
+    enum: ["user", "seller", "admin"],
+    default: "user",
   },
-  googleId: {
-    type: String,
-    unique: true,
-    sparse: true,
-  },
+
+  googleId: { type: String, unique: true, sparse: true },
+
   isVerified: { type: Boolean, default: false },
   verificationOtp: String,
   otpExpires: Date,
 
-  // 👇 profile details
-  fullName: { type: String, required: false },
-  bio: { type: String, required: false },
-  phone: { type: String, required: false },
-  address: { type: String, required: false },
+  // PROFILE
+  fullName: String,
+  bio: String,
+  phone: String,
+  address: String,
 
-  // 👇 location fields
-  latitude: { type: Number, required: false },
-  longitude: { type: Number, required: false },
+  // LOCATION
+  latitude: Number,
+  longitude: Number,
 
-  // 👇 Cloudinary profile image
+  // PROFILE IMAGE
   profileImage: {
     type: String,
     default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
   },
+
+  // PERSONAL COINS
+  ppCoins: {
+    type: Number,
+    default: 0
+  },
+
+  // STORE-SPECIFIC SP COINS
+  spCoins: [spCoinSchema],
+
+  // USER BADGES
+  badges: [{
+    type: String
+  }],
+
+  // PROFILE SCORE
+  profileScore: {
+    type: Number,
+    default: 100
+  }
+
 }, { timestamps: true });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
-
-
-
-// (async () => {
-
-//   try {
-    
-
-//     // delete all users and sellers (keep admin)
-//     const user= await User.find({ });
-//     console.log(user);
-//     //  await User.deleteMany({username: "raghav"});
-
-
-//     console.log("✅ All users and sellers deleted!");
-    
-//   } catch (err) {
-//      console.error(err);
-//   }
-// })();
-
+module.exports = mongoose.model("User", userSchema);

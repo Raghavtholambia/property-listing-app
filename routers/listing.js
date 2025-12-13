@@ -7,14 +7,18 @@ const { storage } = require("../cloudConfig");
 const upload = multer({ storage });
 
 const wrapAsync = require("../utils/wrapAsync");
-const { isLoggedIn, validateListing, listingOwner } = require("../middleware");
+const { isLoggedIn, validateListing, listingOwner, isAdmin } = require("../middleware");
 
 const listingController = require("../controllers/listingController");
 
-// All listings
+// =============================================
+// ⭐ PUBLIC ROUTES
+// =============================================
+
+// All approved listings
 router.get("/", wrapAsync(listingController.getAllListings));
 
-// New form
+// New form (seller/admin)
 router.get("/listing/new", isLoggedIn, listingController.renderNewForm);
 
 // Create listing
@@ -53,6 +57,34 @@ router.delete(
   isLoggedIn,
   listingOwner,
   wrapAsync(listingController.deleteListing)
+);
+
+// =============================================
+// ⭐ ADMIN-ONLY ROUTES (NEW)
+// =============================================
+
+// View all pending listings
+router.get(
+  "/admin/listings",
+  isLoggedIn,
+  isAdmin,
+  wrapAsync(listingController.getAllUnverifiedListings)
+);
+
+// Approve one listing
+router.put(
+  "/admin/listings/:id/approve",
+  isLoggedIn,
+  isAdmin,
+  wrapAsync(listingController.verifyOneListing)
+);
+
+// Approve all listings
+router.put(
+  "/admin/listings/approve-all",
+  isLoggedIn,
+  isAdmin,
+  wrapAsync(listingController.verifyAllListings)
 );
 
 module.exports = router;

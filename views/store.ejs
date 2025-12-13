@@ -1,13 +1,9 @@
 <%- include('./components/header.ejs') %>
 
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title><%= store.shopName %> | Store 🏪</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <style>
     body {
@@ -19,9 +15,7 @@
     }
     .container { flex: 1; }
 
-    /* =========================================
-       STORE BANNER (NOT TOUCHING AS REQUESTED)
-    ==========================================*/
+    /* ================================ BANNER */
     .store-banner {
       width: 100%;
       height: 280px;
@@ -35,8 +29,11 @@
       width: 100%; height: 100%;
       object-fit: cover;
     }
-    .edit-icon {
-      position: absolute; top: 12px; right: 12px;
+
+    .edit-icon, .logo-edit-icon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
       background: white;
       width: 40px; height: 40px;
       border-radius: 50%;
@@ -46,9 +43,13 @@
       z-index: 10;
     }
 
-    /* =========================================
-       LOGO + INFO (NOT TOUCHING AS REQUESTED)
-    ==========================================*/
+    /* Dropzone highlight */
+    .dropzone-hover {
+      outline: 3px dashed #4caf50;
+      outline-offset: -10px;
+    }
+
+    /* ================================ INFO BOX */
     .store-info-box {
       background: white;
       padding: 25px;
@@ -57,6 +58,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
       position: relative;
     }
+
     .shop-logo {
       width: 130px; height: 130px;
       border-radius: 50%; overflow: hidden;
@@ -69,9 +71,7 @@
       width: 100%; height: 100%; object-fit: cover;
     }
 
-    /* =========================================
-       NEW AIRBNB LISTING CARD DESIGN
-    ==========================================*/
+    /* ================================ PRODUCT CARDS */
     .listing-card {
       width: 100%;
       border-radius: 16px;
@@ -81,109 +81,78 @@
       flex-direction: column;
       transition: 0.25s ease;
     }
-    .listing-card:hover {
-      transform: translateY(-4px);
-    }
+    .listing-card:hover { transform: translateY(-4px); }
 
     .listing-img {
       position: relative;
       width: 100%;
       height: 240px;
-      border-radius: 16px;
       overflow: hidden;
+      border-radius: 16px;
     }
     .listing-img img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
-      transition: 0.4s ease-in-out;
+      transition: 0.4s;
     }
-    .listing-card:hover img {
-      transform: scale(1.08);
-      
-      box-shadow: 0px 8px 24px rgba(229, 25, 25, 0.12);
+    .listing-card:hover img { transform: scale(1.08); }
 
-    }
-
-    /* Category Badge */
     .category-badge {
       position: absolute;
-      top: 12px;
-      left: 12px;
+      top: 12px; left: 12px;
       background: rgba(0,0,0,0.7);
       padding: 6px 14px;
       color: white;
       border-radius: 20px;
       font-size: 0.8rem;
-      font-weight: 500;
     }
 
-    /* Heart icon like Airbnb */
     .heart-btn {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 12px; right: 12px;
       background: rgba(255,255,255,0.8);
-      width: 38px;
-      height: 38px;
+      width: 38px; height: 38px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
-      transition: 0.3s ease;
-    }
-    .heart-btn:hover {
-      background: white;
     }
 
-    /* Content */
-    .card-body {
-      padding: 12px 14px;
-    }
-    .listing-title {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #111;
-    }
-    .listing-desc {
-      margin: 4px 0;
-      color: #777;
-      font-size: 0.9rem;
-      height: 38px;
-      overflow: hidden;
-    }
+    .card-body { padding: 12px 14px; }
+    .listing-title { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    .listing-desc { font-size: 0.9rem; color: #777; height: 38px; overflow: hidden; }
 
-    /* Rating */
-    .rating {
-      font-size: 0.95rem;
-      color: #000;
-      font-weight: 600;
-    }
-    .rating i {
-      color: #ff385c;
-    }
+    .rating i { color: #ff385c; }
 
-    /* Footer price */
-    .card-footer {
-      padding: 12px 14px;
-      background: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid #eee;
-    }
-    .price-tag {
-      color: #111;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .view-text {
-      color: #666;
-      font-size: 0.85rem;
-    }
+    .card-footer { background: white; padding: 12px 14px; border-top: 1px solid #eee; }
+    .badge-icon {
+  font-size: 2.3rem;
+  -webkit-text-stroke: 1px #333;
+  
+}
+
+/* Badge Colors */
+.badge-icon.bronze {
+  color: #cd7f32;
+}
+
+.badge-icon.silver {
+  color: #c0c0c0;
+}
+
+.badge-icon.gold {
+  color: #ffd700;
+}
+
+.badge-icon.platinum {
+  color: #e5e1d9;
+  -webkit-text-stroke: 1px #ffe205;
+}
+.badge-icon.platinum {
+  color: #29248f;
+  -webkit-text-stroke: 1px #1e1f0b;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
   </style>
 </head>
 
@@ -192,12 +161,13 @@
 
   <!-- ======================= BANNER ======================= -->
   <div class="store-banner" id="bannerDropZone">
-    <img id="bannerImg" src="<%= store.shopBanner || 'https://via.placeholder.com/1500x500' %>" />
+    <img id="bannerImg" src="<%= store.shopBanner || 'https://via.placeholder.com/1500x500' %>">
 
     <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
       <div class="edit-icon"><i class="fa-solid fa-pen"></i></div>
-      <form id="bannerForm" style="display:none;" enctype="multipart/form-data">
-        <input id="bannerInput" type="file" name="banner" accept="image/*" />
+
+      <form id="bannerForm" style="display:none;">
+        <input type="file" id="bannerInput" name="banner" accept="image/*" />
       </form>
     <% } %>
   </div>
@@ -206,30 +176,54 @@
   <div class="store-info-box">
     <div class="d-flex align-items-center gap-3 flex-wrap">
 
-      <!-- logo -->
       <div class="position-relative" id="logoDropZone">
         <div class="shop-logo">
-          <img id="logoImg" src="<%= store.shopLogo || 'https://via.placeholder.com/200' %>" />
+          <img id="logoImg" src="<%= store.shopLogo || 'https://via.placeholder.com/200' %>">
         </div>
 
         <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
           <div class="logo-edit-icon"><i class="fa-solid fa-pen"></i></div>
-          <form id="logoForm" style="display:none;" enctype="multipart/form-data">
-            <input id="logoInput" type="file" name="logo" accept="image/*" />
+
+          <form id="logoForm" style="display:none;">
+            <input type="file" id="logoInput" name="logo" accept="image/*" />
           </form>
         <% } %>
       </div>
 
-      <div class="mt-4 mt-md-0">
-        <h1 class="fw-bold m-0"><%= store.shopName %></h1>
-        <p class="text-muted mb-1">
-          Owned by <strong><%= owner.username %></strong>
-        </p>
-        <p class="text-muted">
-          <i class="fa-solid fa-location-dot"></i>
-          <%= store.address || "Not provided" %>
-        </p>
-      </div>
+<div class="mt-4 mt-md-0">
+<h1 class="fw-bold m-0 d-flex align-items-center gap-2">
+  <%= store.shopName %>
+
+  <% if (store.badge) { 
+       const badge = store.badge.toLowerCase();
+  %>
+
+    <% if (badge === "bronze") { %>
+      <i class="fa-solid fa-award badge-icon bronze" title="Bronze Store"></i>
+
+    <% } else if (badge === "silver") { %>
+      <i class="fa-solid fa-award badge-icon silver" title="Silver Store"></i>
+
+    <% } else if (badge === "gold" || badge === "golden") { %>
+      <i class="fa-solid fa-award badge-icon gold" title="Gold Store"></i>
+
+    <% } else if (badge === "platinum") { %>
+      <i class="fa-solid fa-award badge-icon platinum" title="Platinum Store"></i>
+    <% } %>
+
+  <% } %>
+</h1>
+
+
+
+  <p class="text-muted mb-1">Owned by <strong><%= owner.username %></strong></p>
+
+  <p class="text-muted">
+    <i class="fa-solid fa-location-dot"></i> 
+    <%= store.address || "Not provided" %>
+  </p>
+</div>
+
     </div>
 
     <p class="mt-3 text-secondary"><%= store.description || "No shop description added." %></p>
@@ -244,41 +238,31 @@
     <h3 class="fw-bold">Products from this Store</h3>
 
     <div class="row g-4 mt-2">
-
       <% listings.forEach(listing => { %>
+
         <div class="col-12 col-sm-6 col-lg-4">
 
           <a href="/listing/<%= listing._id %>" class="text-decoration-none">
             <div class="listing-card">
 
-              <!-- image block -->
               <div class="listing-img">
-                <img src="<%= listing.image.url %>" alt="">
+                <img src="<%= listing.image.url %>">
                 <span class="category-badge"><%= listing.category %></span>
                 <div class="heart-btn"><i class="fa-regular fa-heart"></i></div>
               </div>
 
-              <!-- content -->
               <div class="card-body">
                 <h5 class="listing-title"><%= listing.itemName %></h5>
-
                 <p class="listing-desc"><%= listing.description %></p>
 
                 <div class="d-flex justify-content-between mt-2">
-                  <span class="rating">
-                    <i class="fa-solid fa-star"></i>
-                    <%= listing.averageRating || "0.0" %>
-                  </span>
-
-                  <span class="text-muted small">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <%= listing.city %>, <%= listing.country %>
-                  </span>
+                  <span class="rating"><i class="fa-solid fa-star"></i> <%= listing.averageRating || "0.0" %></span>
+                  <span class="text-muted small"><i class="fa-solid fa-location-dot"></i>
+                    <%= listing.city %>, <%= listing.country %></span>
                 </div>
               </div>
 
-              <!-- price footer -->
-              <div class="card-footer">
+              <div class="card-footer d-flex justify-content-between">
                 <span class="price-tag">₹ <%= listing.pricePerDay %> /day</span>
                 <span class="view-text">View details →</span>
               </div>
@@ -286,7 +270,6 @@
             </div>
           </a>
 
-          <!-- edit + delete -->
           <% if(currUser && currUser._id.toString() === owner._id.toString()) { %>
             <a href="/listing/<%= listing._id %>/edit" class="btn btn-primary btn-sm mt-2">Edit</a>
             <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" style="display:inline;">
@@ -295,11 +278,80 @@
           <% } %>
 
         </div>
-      <% }) %>
 
+      <% }) %>
     </div>
   </div>
 </div>
+
+<!-- ======================= DRAG & DROP JS ======================= -->
+<script>
+function enableDragDrop(dropZoneId, inputId, imgId, uploadUrl) {
+  const dropZone = document.getElementById(dropZoneId);
+  const input = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+
+  ["dragenter","dragover"].forEach(evt=>{
+    dropZone.addEventListener(evt, e=>{
+      e.preventDefault();
+      dropZone.classList.add("dropzone-hover");
+    });
+  });
+
+  ["dragleave","drop"].forEach(evt=>{
+    dropZone.addEventListener(evt, e=>{
+      e.preventDefault();
+      dropZone.classList.remove("dropzone-hover");
+    });
+  });
+
+  dropZone.addEventListener("drop", e=>{
+    const file = e.dataTransfer.files[0];
+    if(file) previewAndUpload(file);
+  });
+
+  input.addEventListener("change", ()=>{
+    const file = input.files[0];
+    if(file) previewAndUpload(file);
+  });
+
+  async function previewAndUpload(file){
+    img.src = URL.createObjectURL(file);
+
+    const fd = new FormData();
+
+    // correct field name based on URL
+    const field = uploadUrl.includes("banner") ? "banner" : "logo";
+
+    fd.append(field, file);
+
+    await fetch(uploadUrl, { method:"POST", body:fd });
+  }
+}
+
+/* Enable drag-drop for banner + logo */
+enableDragDrop(
+  "bannerDropZone",
+  "bannerInput",
+  "bannerImg",
+  "/store/<%= store._id %>/banner"
+);
+
+enableDragDrop(
+  "logoDropZone",
+  "logoInput",
+  "logoImg",
+  "/store/<%= store._id %>/logo"
+);
+
+/* Pen icon triggers file input */
+document.querySelectorAll(".edit-icon, .logo-edit-icon").forEach(icon=>{
+  icon.addEventListener("click", ()=>{
+    const input = icon.parentElement.querySelector("input[type='file']");
+    input.click();
+  });
+});
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

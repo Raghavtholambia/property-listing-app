@@ -1,117 +1,212 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('../components/header.ejs') %>
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout</title>
   <style>
     body {
-  font-family: Arial, sans-serif;
-  background: #f1f3f6;
-  margin: 0;
-  padding: 20px;
-}
+      font-family: "Poppins", sans-serif;
+      background: #eef1f5;
+      margin: 0;
+      padding: 25px;
+    }
 
-.checkout-container {
-  display: flex;
-  gap: 20px;
-}
+    .checkout-container {
+      display: flex;
+      gap: 25px;
+      max-width: 1100px;
+      margin: auto;
+    }
 
-.checkout-left {
-  flex: 2;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-}
+    .checkout-left, .checkout-right {
+      background: #fff;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
 
-.checkout-right {
-  flex: 1;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  height: fit-content;
-}
+    .checkout-left { flex: 2; }
+    .checkout-right { flex: 1; position: sticky; top: 20px; height: fit-content; }
 
-.step {
-  margin-bottom: 20px;
-}
+    .step h3 { margin-bottom: 6px; font-weight: 600; }
+    .order-summary .item { display: flex; gap: 15px; padding: 12px 0; border-bottom: 1px solid #eee; }
+    .order-summary img { width: 65px; height: 65px; object-fit: cover; border-radius: 8px; }
 
-.order-summary .item {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
-}
+    .place-order {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff7a36, #ff4b2d);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.4s;
+      letter-spacing: 0.5px;
+    }
+    .place-order:hover { opacity: 0.85; transform: translateY(-1px); }
 
-.order-summary img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  margin-right: 10px;
-}
+    /* Payment Modal */
+    .payment-modal { display: none; position: fixed; top: 0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999; }
+    .payment-content { display: flex; gap: 20px; background: #fff; padding: 20px; border-radius: 10px; max-width: 900px; width: 90%; }
+    .payment-left { flex: 2; }
+    .payment-right { flex: 1; height: fit-content; }
 
-.discount {
-  color: green;
-  font-size: 14px;
-}
-
-.place-order {
-  width: 100%;
-  padding: 12px;
-  background: #fb641b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
+    .method { padding: 15px; border: 1px solid #ddd; margin-bottom: 10px; cursor: pointer; border-radius: 6px; }
+    .method.active { border: 2px solid #2874f0; background: #f5f9ff; }
+    .form-box { display: none; margin-top: 20px; }
+    .form-box.active { display: block; }
+    .form-box input { padding: 10px; width: 80%; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+    .payBtn { display: block; width: 100%; padding: 12px; background: #fb641b; color: white; border: none; border-radius: 6px; margin-top: 10px; font-weight: bold; cursor: pointer; }
+    .price-summary { margin-top: 20px; }
+    .discount { color: green; }
   </style>
 </head>
+
 <body>
-  <div class="checkout-container">
-    <!-- Left Side -->
-    <div class="checkout-left">
-      <div class="step">
-        <h3>1. LOGIN</h3>
-        <p>+91 <%= currUser?.phone || "9876543210" %> <a href="#">Change</a></p>
-      </div>
 
-      <div class="step">
-        <h3>2. DELIVERY ADDRESS</h3>
-        <p><%= currUser?.address || "Your saved address here" %></p>
-      </div>
+<div class="checkout-container">
 
-      <div class="step order-summary">
-        <h3>3. ORDER SUMMARY</h3>
+  <!-- LEFT -->
+  <div class="checkout-left">
 
-        <% cart.items.forEach(item => { %>
-          <div class="item">
-            <img src="<%= item.product.image?.url || 'https://via.placeholder.com/60' %>" alt="Product">
-            <div>
-              <p><%= item.product.itemName %></p>
-              <p>₹<%= item.total %> 
-                 <span class="text-muted">(₹<%= item.product.pricePerDay %>/day </span>
-              </p>
-            </div>
+    <div class="step">
+      <h3>1. LOGIN</h3>
+      <p>+91 <%= currUser?.phone || "9876543210" %> <a href="#">Change</a></p>
+    </div>
+
+    <div class="step">
+      <h3>2. DELIVERY ADDRESS</h3>
+      <p><%= currUser?.address || "Your saved address here" %></p>
+    </div>
+
+    <div class="step order-summary">
+      <h3>3. ORDER SUMMARY</h3>
+      <% cart.items.forEach(item => { %>
+        <div class="item">
+          <img src="<%= item.product.image?.url || 'https://via.placeholder.com/60' %>">
+          <div>
+            <strong><%= item.product.itemName %></strong>
+            <p>₹<%= item.total %> <span style="color: #777;">(₹<%= item.product.pricePerDay %>/day)</span></p>
           </div>
-        <% }) %>
+        </div>
+      <% }) %>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="checkout-right">
+    <h3><i class="fa-solid fa-receipt"></i> Price Details</h3>
+    <p>Price (<%= cart.items.length %> items): ₹<%= cart.items.reduce((s,i)=>s+i.total,0) %></p>
+    <hr>
+    <h3>Total Payable: ₹<%= cart.grandTotal %></h3>
+    <p style="color: green;">You will save ₹0 on this order</p>
+
+    <button id="continuePay" class="place-order">CONTINUE TO PAY</button>
+  </div>
+
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="payment-modal" id="paymentModal">
+  <div class="payment-content">
+
+    <!-- LEFT: Payment Methods -->
+    <div class="payment-left">
+      <h2>Complete Payment</h2>
+
+      <div class="payment-methods">
+        <div class="method active" data-method="upi">UPI <small>Save upto ₹50 • 4 offers</small></div>
+        <div class="method" data-method="card">Credit / Debit / ATM Card <small>Save upto ₹100 • 4 offers</small></div>
+        <div class="method" data-method="cod">Cash on Delivery</div>
+      </div>
+
+      <div id="upi-form" class="form-box active">
+        <p>Add new UPI ID</p>
+        <input type="text" id="upi-input" placeholder="Enter your UPI ID" />
+        <button class="payBtn" id="pay-upi">Pay ₹<%= cart.grandTotal %></button>
+      </div>
+
+      <div id="card-form" class="form-box">
+        <input type="text" placeholder="Card Number" id="card-number" />
+        <input type="text" placeholder="Name on Card" id="card-name" />
+        <input type="text" placeholder="Expiry (MM/YY)" id="card-expiry" />
+        <input type="password" placeholder="CVV" id="card-cvv" />
+        <button class="payBtn" id="pay-card">Pay ₹<%= cart.grandTotal %></button>
+      </div>
+
+      <div id="cod-form" class="form-box">
+        <p>Pay with Cash on Delivery</p>
+        <button class="payBtn" id="pay-cod">Place Order (Pay ₹<%= cart.grandTotal %> on delivery)</button>
       </div>
     </div>
 
-    <!-- Right Side -->
-    <div class="checkout-right">
+    <!-- RIGHT: Price Summary -->
+    <div class="payment-right">
       <h3>PRICE DETAILS</h3>
-      <p>Price (<%= cart.items.length %> items): <span>₹<%= cart.items.reduce((sum, i) => sum + i.total, 0) %></span></p>
+      <p>Price (<%= cart.items.length %> items): ₹<%= cart.items.reduce((sum, i) => sum + i.total, 0) %></p>
+      <p>Platform Fee: ₹5</p>
       <hr>
-      <h4>Total Payable: <span>₹<%= cart.grandTotal %></span></h4>
-      <p class="savings">You will save ₹0 on this order</p> <!-- optional discount -->
-      
-<form action="/cart/payment" method="GET">
-  <button type="submit" class="place-order">PLACE ORDER</button>
-</form>
-
+      <h3>Total Amount: ₹<%= cart.grandTotal + 5 %></h3>
+      <p class="discount">10% instant discount available</p>
     </div>
-  </div>
-</body>
 
+  </div>
+</div>
+
+<script>
+  const listingIds = <%- JSON.stringify(cart.items.map(i => i.product._id)) %>;
+  const totalAmount = <%= cart.grandTotal %>;
+
+  document.getElementById("continuePay").addEventListener("click", () => {
+    document.getElementById("paymentModal").style.display = "flex";
+  });
+
+  // Switch payment methods
+  document.querySelectorAll(".method").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".method").forEach(m => m.classList.remove("active"));
+      document.querySelectorAll(".form-box").forEach(f => f.classList.remove("active"));
+
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.method + "-form").classList.add("active");
+    });
+  });
+
+  // Helper to send payment
+  function sendPayment(method, extraData = {}) {
+    fetch("/checkout/pay/" + method, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        listingId: listingIds[0], // currently just first item, can loop later
+        amount: totalAmount,
+        ...extraData
+      })
+    })
+      .then(res => res.json())
+      .then(data => alert(data.message))
+      .catch(err => console.error(err));
+  }
+
+  document.getElementById("pay-upi").addEventListener("click", () => {
+    const upiId = document.getElementById("upi-input").value;
+    sendPayment("upi", { upiId });
+  });
+
+  document.getElementById("pay-card").addEventListener("click", () => {
+    sendPayment("card", {
+      cardNumber: document.getElementById("card-number").value,
+      name: document.getElementById("card-name").value,
+      expiry: document.getElementById("card-expiry").value,
+      cvv: document.getElementById("card-cvv").value
+    });
+  });
+
+  document.getElementById("pay-cod").addEventListener("click", () => {
+    sendPayment("cod");
+  });
+</script>
+
+</body>
 </html>

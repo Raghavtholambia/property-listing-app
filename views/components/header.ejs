@@ -1,530 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Rent Hub</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 🟤 Base Theme Colors */
+        :root {
+            --brown-dark: #3e2723;
+            --brown-medium: #5d4037;
+            --brown-light: #91756b;
+            --brown-accent: #d7ccc8;
+            --cream-bg: #f5f3ef;
+            --gold-accent: #c49b63;
+        }
+
+        /* 🌟 Navbar */
+        .navbar {
+            background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
+            padding: 0.8rem 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold-accent) !important;
+            letter-spacing: 1px;
+        }
+
+        .navbar-brand:hover {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link,
+        .navbar .btn {
+            color: var(--cream-bg) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--gold-accent) !important;
+        }
+
+        .navbar .btn-outline-light {
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent) !important;
+        }
+
+        .navbar .btn-outline-light:hover {
+            background: var(--gold-accent);
+            border-color: var(--gold-accent);
+            color: var(--brown-dark) !important;
+        }
+
+        /* 🔍 Search Bar */
+        form.d-flex input[type="search"] {
+            border-radius: 30px;
+            border: none;
+            padding-left: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form.d-flex input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(196, 155, 99, 0.4);
+        }
+
+        form.d-flex button {
+            border-radius: 30px;
+            background: var(--gold-accent);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        form.d-flex button:hover {
+            background: #b3884a;
+        }
+
+        /* 🛍️ Category Bar */
+        .bg-white.border-bottom {
+            background: var(--cream-bg) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Use d-flex flex-wrap for horizontal scroll or wrap on small screens */
+        .nav.justify-content-center {
+            flex-wrap: wrap; 
+        }
+
+        .nav.justify-content-center .nav-link {
+            color: var(--brown-dark) !important;
+            font-weight: 600;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .nav.justify-content-center .nav-link:hover {
+            color: var(--gold-accent) !important;
+            transform: translateY(-2px);
+        }
+
+        /* 🧾 Mega Dropdown */
+        .mega-dropdown .dropdown-menu {
+            /* max width only on desktop */
+            width: auto; 
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            background: #fff;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        /* Apply desktop specific width for mega menu on medium+ screens */
+        @media (min-width: 768px) {
+            .mega-dropdown .dropdown-menu {
+                width: 800px;
+            }
+        }
+
+        .mega-menu .row {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .mega-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ⚙️ Modal */
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
+            color: var(--gold-accent);
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(200%);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: var(--cream-bg);
+        }
+        
+        /* Divider for OR */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 15px 0;
+            color: #999;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .or-divider:not(:empty)::before {
+            margin-right: .5em;
+        }
+
+        .or-divider:not(:empty)::after {
+            margin-left: .5em;
+        }
+
+        /* 🧾 Auth Tabs */
+        .nav-tabs .nav-link {
+            color: var(--brown-medium);
+            font-weight: 600;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            border-bottom: 2px solid var(--brown-medium);
+            color: var(--brown-dark);
+        }
+
+        /* 🧍 Form Styling */
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control:focus {
+            border-color: var(--brown-medium);
+            box-shadow: 0 0 5px rgba(93, 64, 55, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #8d6e63, #a1887f);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #795548, #a1887f);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
+        }
+
+        .btn-google {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #444;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-google:hover {
+            background-color: #f1f1f1;
+            transform: translateY(-2px);
+        }
+
+        .btn-google img {
+            width: 20px;
+            margin-right: 8px;
+        }
+
+        /* ⚡ Username Feedback */
+        #register-username-status {
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .text-danger {
+            color: crimson !important;
+        }
+
+        .text-success {
+            color: #4caf50 !important;
+        }
+
+        /* ✨ OTP Modal */
+        #verifyOtpModal .modal-header {
+            background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
+            color: #fff;
+        }
+
+        #verifyOtpModal .btn-success {
+            background: linear-gradient(90deg, var(--gold-accent), var(--brown-medium));
+            border: none;
+        }
+
+        #verifyOtpModal .btn-success:hover {
+            background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
+        }
+
+        /* 🪄 Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        button:hover,
+        .btn:hover {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        .text-main {
+            color: var(--brown-light) !important;
+        }
+
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+
+        .profile-icon:hover i {
+            color: #dc3545;
+            transform: scale(1.1);
+            transition: 0.2s;
+        }
+        
+        /* Adjusted color for logged-in user links/buttons to match other icons */
+        .navbar .nav-link,
+        .navbar .btn {
+            color: var(--cream-bg) !important; 
+        }
+        /* Make nav links stand out a bit more in mobile */
+        @media (max-width: 991.98px) {
+            .navbar .nav-link {
+                color: var(--gold-accent) !important;
+                padding: 10px 0;
+            }
+            .search-wrap {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+        }
 
 
-<style>
-/* 🟤 Base Theme Colors */
-:root {
-  --brown-dark: #3e2723;
-  --brown-medium: #5d4037;
-  --brown-light: #91756b;
-  --brown-accent: #d7ccc8;
-  --cream-bg: #f5f3ef;
-  --gold-accent: #c49b63;
-}
+        /* ================= COINS & NOTIFICATION ICONS =================== */
 
-/* 🌟 Navbar */
-.navbar {
-  background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
-  padding: 0.8rem 1.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
-}
-.navbar-brand {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--gold-accent) !important;
-  letter-spacing: 1px;
-}
-.navbar-brand:hover {
-  color: #fff !important;
-}
-.navbar .nav-link,
-.navbar .btn {
-  color: var(--cream-bg) !important;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-.navbar .nav-link:hover {
-  color: var(--gold-accent) !important;
-}
-.navbar .btn-outline-primary {
-  border: 1px solid var(--gold-accent);
-  color: var(--gold-accent);
-}
-.navbar .btn-outline-primary:hover {
-  background: var(--gold-accent);
-  border-color: var(--gold-accent);
-  color: var(--brown-dark);
-}
+        .nav-icon {
+            position: relative;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--gold-accent);
+            transition: 0.3s ease;
+        }
 
-/* 🔍 Search Bar */
-form.d-flex input[type="search"] {
-  border-radius: 30px;
-  border: none;
-  padding-left: 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-form.d-flex input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(196,155,99,0.4);
-}
-form.d-flex button {
-  border-radius: 30px;
-  background: var(--gold-accent);
-  border: none;
-  transition: all 0.3s ease;
-}
-form.d-flex button:hover {
-  background: #b3884a;
-}
+        .nav-icon:hover {
+            transform: scale(1.15);
+            color: #f5e3b5;
+        }
 
-/* 🛍️ Category Bar */
-.bg-white.border-bottom {
-  background: var(--cream-bg) !important;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-.nav.justify-content-center .nav-link {
-  color: var(--brown-dark) !important;
-  font-weight: 600;
-  padding: 10px 15px;
-  transition: all 0.3s ease;
-}
-.nav.justify-content-center .nav-link:hover {
-  color: var(--gold-accent) !important;
-  transform: translateY(-2px);
-}
+        .nav-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: crimson;
+            padding: 1px 6px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
 
-/* 🧾 Mega Dropdown */
-.mega-dropdown .dropdown-menu {
-  width: 800px;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.15);
-  padding: 20px;
-  background: #fff;
-  animation: fadeIn 0.3s ease-in-out;
-}
-.mega-menu .row {
-  max-height: 300px;
-  overflow-y: auto;
-}
-.mega-dropdown:hover .dropdown-menu {
-  display: block;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+        /* Coin Modal */
+        #coinModal .modal-content {
+            background: linear-gradient(180deg, #5d4037, #3e2723);
+            color: #fce8c8;
+            border-radius: 15px;
+        }
 
-/* ⚙️ Modal */
-.modal-content {
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.modal-header {
-  background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
-  color: var(--gold-accent);
-  border-bottom: none;
-}
-.modal-header .btn-close {
-  filter: brightness(200%);
-}
-.modal-body {
-  padding: 2rem;
-  background: var(--cream-bg);
-}
+        #coinModal .gold-coin {
+            font-size: 3rem;
+            color: gold;
+            animation: spin 2s linear infinite;
+        }
 
-/* 🧾 Auth Tabs */
-.nav-tabs .nav-link {
-  color: var(--brown-medium);
-  font-weight: 600;
-  border: none;
-  border-bottom: 2px solid transparent;
-}
-.nav-tabs .nav-link.active {
-  border-bottom: 2px solid var(--brown-medium);
-  color: var(--brown-dark);
-}
+        @keyframes spin {
+            0% {
+                transform: rotateY(0deg);
+            }
 
-/* 🧍 Form Styling */
-.form-control {
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-}
-.form-control:focus {
-  border-color: var(--brown-medium);
-  box-shadow: 0 0 5px rgba(93,64,55,0.4);
-}
-.btn-success {
-  background: linear-gradient(90deg, #8d6e63, #a1887f);
-  border: none;
-  transition: all 0.3s ease;
-}
-.btn-success:hover {
-  background: linear-gradient(90deg, #795548, #a1887f);
-}
-.btn-primary {
-  background: linear-gradient(90deg, var(--brown-medium), var(--brown-dark));
-  border: none;
-  transition: all 0.3s ease;
-}
-.btn-primary:hover {
-  background: linear-gradient(90deg, var(--brown-dark), var(--brown-medium));
-}
-.btn-google {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  color: #444;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-.btn-google:hover {
-  background-color: #f1f1f1;
-  transform: translateY(-2px);
-}
-.btn-google img {
-  width: 20px;
-  margin-right: 8px;
-}
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
 
-/* ⚡ Username Feedback */
-#register-username-status {
-  font-size: 0.9em;
-  margin-top: 5px;
-  display: block;
-}
-.text-danger { color: crimson !important; }
-.text-success { color: #4caf50 !important; }
+        /* SP coins list */
+        .sp-box {
+            background: #fff;
+            color: #5d4037;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: 0.2s ease;
+        }
+        
+        .sp-box:hover {
+            background: #6d4c41 !important;
+            transform: scale(1.02);
+            color: #fce8c8;
+        }
+        /* Override for hover text color */
+        .sp-box:hover * { 
+            color: #fce8c8 !important;
+        }
 
-/* ✨ OTP Modal */
-#verifyOtpModal .modal-header {
-  background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
-  color: #fff;
-}
-#verifyOtpModal .btn-success {
-  background: linear-gradient(90deg, var(--gold-accent), var(--brown-medium));
-  border: none;
-}
-#verifyOtpModal .btn-success:hover {
-  background: linear-gradient(90deg, var(--brown-medium), var(--gold-accent));
-}
 
-/* 🪄 Animations */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-button:hover, .btn:hover {
-  animation: pulse 0.3s ease-in-out;
-}
+        /* Notification Modal */
+        #notificationModal .modal-content {
+            border-radius: 15px;
+            padding: 0;
+        }
 
-.text-main {
-  color: var(--brown-light) !important;
-}
-  .dropdown-toggle::after {
-    display: none !important;
-  }
-  .profile-icon:hover i {
-    color: #dc3545;
-    transform: scale(1.1);
-    transition: 0.2s;
-  }
-  .navbar .nav-link, .navbar .btn {
-    color: #967a66 !important;
-    font-weight: 500;
-    transition: all 0.3s 
-ease;
-}
-</style>
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: #ffffff;
+            border-left: 4px solid #0d6efd;
+            transition: 0.2s ease;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
 
+        .notification-item:hover {
+            background: #f8f9ff;
+            transform: translateX(4px);
+        }
+
+        /* Default icon if no image */
+        .notif-icon {
+            flex-shrink: 0; /* Prevents icon from shrinking */
+            width: 45px;
+            height: 45px;
+            background: #e8efff;
+            color: #0d6efd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .notif-link {
+            font-size: 0.85rem;
+            color: #0d6efd;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .notif-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Payment Success Popup */
+        #paymentSuccessPopup {
+            z-index: 1060; /* Higher than modals (1050) */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top px-4 py-2">
-  <div class="container-fluid">
+<body>
 
-    <!-- Brand -->
-    <% if (currUser && currUser.role !== "user") { %>
-      <a class="navbar-brand fw-bold text-main" href="/resource">Rent Hub</a>
-    <% } else { %>
-      <a class="navbar-brand fw-bold text-main" href="/">Rent Hub</a>
-    <% } %>
-
-    <!-- Nav Links -->
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
-      <li class="nav-item">
-        <a class="nav-link" href="/">Products</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/store"><i class="fa fa-store"></i> Shops</a>
-      </li>
-    </ul>
-
-    <!-- Search Bar -->
-    <form class="d-flex mx-auto w-50" action="/search" method="get">
-      <input class="form-control me-2" type="search" name="q" placeholder="Search for items..." aria-label="Search">
-      <button class="btn btn-outline-primary" type="submit">
-        <i class="fa fa-search"></i>
-      </button>
-    </form>
-
-    <!-- Right Section -->
-    <div class="d-flex gap-3 align-items-center">
-
-      <% if (currUser) { %>
-
-      <!-- Profile Dropdown -->
-      <div class="dropdown ms-auto">
-        <button class="btn border-0 bg-transparent dropdown-toggle p-0" id="profileMenu" data-bs-toggle="dropdown">
-          <i class="fa-solid fa-user-circle fa-2x"></i>
-        </button>
-
-        <ul class="dropdown-menu dropdown-menu-end">
-
-          <li class="dropdown-header text-center fw-bold text-dark">
-            <%= currUser.username %>
-          </li>
-
-          <li><hr class="dropdown-divider"></li>
-
-          <li><a class="dropdown-item" href="/profile">Profile</a></li>
-
-          <!-- Become Seller / Seller Dashboard -->
-          <% if (currUser.role !== 'seller') { %>
-            <li><a class="dropdown-item" href="/seller/register">Become a seller</a></li>
-          <% } else { %>
-            <li><a class="dropdown-item" href="/seller/dashboard">Seller Dashboard</a></li>
-          <% } %>
-
-          <!-- Add Product for sellers / Admin dashboard for others -->
-          <% if (currUser.role === 'seller') { %>
-            <li><a class="dropdown-item text-success" href="/resource">Add Product</a></li>
-          <% } else if (currUser.role === 'admin') { %>
-            <li><a class="dropdown-item text-success" href="/resource">Admin Dashboard</a></li>
-          <% } %>
-
-          <!-- Logout -->
-          <li><a class="dropdown-item text-danger" href="/user/logout">Logout</a></li>
-
-        </ul>
-      </div>
-
-      <!-- Username Display -->
-      <span class="fw-semibold text-main"><%= currUser.username %></span>
-
-      <% } else { %>
-
-      <!-- Login Button -->
-      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-        Login / Sign Up
-      </button>
-
-      <% } %>
-
-      <!-- Cart -->
-      <a class="nav-link" href="/cart/view">
-        <i class="fa fa-shopping-cart"></i> Cart
-      </a>
-
-    </div>
-
-  </div>
-</nav>
-
-
-<!-- 🔽 Login / Sign Up Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title" id="loginModalLabel">Login / Sign Up</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">Login</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">Register</button>
-          </li>
-        </ul>
-
-        <div class="tab-content">
-          <!-- Login Tab -->
-          <div class="tab-pane fade show active" id="login">
-            <form action="/user/login" method="POST">
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="text" id="loginUsername" name="username" class="form-control" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
-
-            <div class="or-divider">OR</div>
-
-            <!-- Google Login -->
-            <a href="/user/google" class="btn btn-google w-100 d-flex align-items-center justify-content-center">
-              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
-              Continue with Google
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fa-solid fa-house-chimney-crack me-2"></i>Rent Hub
             </a>
-          </div>
 
-          <!-- Register Tab -->
-          <div class="tab-pane fade" id="register">
-            <form action="/user/registeredUser" method="POST">
-              <div class="mb-3">
-                <label for="registerUsername" class="form-label">Username</label>
-                <input type="text" id="registerUsername" class="form-control" name="username" required>
-                <small id="register-username-status"></small>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" required>
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" name="password" required>
-              </div>
-              <div class="mb-3">
-                <label for="role" class="form-label">Register As</label>
-                <select class="form-select" name="role" required>
-                  <option value="user" selected>User</option>
-                  <option value="seller">Seller</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-success w-100">Register</button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- 🔽 OTP Verification Modal -->
-<div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">Email Verification</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form action="/user/verify-otp" method="POST">
-          <input type="hidden" name="email" id="otpEmail" value="">
-          <input type="hidden" name="username" id="otpUsername" value="">
-          <div class="mb-3">
-            <label for="otp" class="form-label">Enter OTP</label>
-            <input type="text" class="form-control" name="otp" required>
-          </div>
-          <button type="submit" class="btn btn-success w-100">Verify</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars" style="color: var(--gold-accent);"></i>
+            </button>
 
 
+            <div class="collapse navbar-collapse" id="mainNav">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/store">Shops</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cart/view">Cart</a></li>
+                </ul>
 
 
-<!-- Category Bar -->
-<div class="bg-white border-bottom">
-  <ul class="nav justify-content-center py-2">
-    <% if (categories && categories.length > 0) { %>
-      <% categories.forEach(cat => { %>
-        <li class="nav-item dropdown mega-dropdown">
-          <a class="nav-link dropdown-toggle fw-semibold" href="/category/<%= cat %>" data-bs-toggle="dropdown">
-            <%= cat %>
-          </a>
-          <div class="dropdown-menu mega-menu p-3">
-            <div class="row">
-              <% if (categoryItems && categoryItems[cat]) { %>
-                <% categoryItems[cat].forEach(item => { %>
-                  <div class="col-md-4">
-                    <a class="dropdown-item" href="/listing/<%= item._id %>">
-                      <%= item.itemName %>
-                    </a>
-                  </div>
-                <% }) %>
-              <% } %>
+                <form class="d-flex search-wrap my-2 my-lg-0 me-lg-3 w-100 w-lg-auto" action="/search">
+                    <input class="form-control search-input me-2 flex-grow-1" type="search" name="q" placeholder="Search items" aria-label="Search">
+                    <button class="btn btn-sm text-dark" type="submit">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                </form>
+
+
+                <div class="d-flex align-items-center nav-icons gap-3 my-2 my-lg-0">
+                    <% if(typeof currUser !== 'undefined' && currUser){ %>
+                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#coinModal">
+                        <i class="fa-solid fa-coins"></i>
+                        <span class="nav-badge"><%= currUser.ppCoins || 0 %></span>
+                    </div>
+
+
+                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="nav-badge"><%= typeof notifications !== 'undefined' ? notifications.length : 0 %></span>
+                    </div>
+
+
+                    <div class="dropdown">
+                        <button class="btn text-white" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
+                            <i class="fa-solid fa-user-circle fa-xl"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-item-text fw-bold"><%= currUser.username %></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><a class="dropdown-item text-danger" href="/user/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                    <% } else { %>
+                    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                    <% } %>
+                </div>
+
+
             </div>
-          </div>
-        </li>
-      <% }) %>
-    <% } %>
-  </ul>
-</div>
+        </div>
+    </nav>
 
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login / Sign Up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-    // Auto open login modal
-    if (urlParams.get("showLogin") === "true") {
-      const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
-      loginModal.show();
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+                                type="button" role="tab" aria-controls="login" aria-selected="true">Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
+                                type="button" role="tab" aria-controls="register" aria-selected="false">Register</button>
+                        </li>
+                    </ul>
 
-      if (urlParams.get("tab") === "register") {
-        document.querySelector("#login-tab").classList.remove("active");
-        document.querySelector("#login").classList.remove("show", "active");
-        document.querySelector("#register-tab").classList.add("active");
-        document.querySelector("#register").classList.add("show", "active");
-      }
-    }
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                            <form action="/user/login" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label" for="loginUsername">Email</label>
+                                    <input type="text" id="loginUsername" name="username" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="loginPassword">Password</label>
+                                    <input type="password" id="loginPassword" name="password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Login</button>
+                            </form>
 
-    // Auto open OTP modal
-    if (urlParams.get("showVerifyOtp") === "true") {
-      const email = urlParams.get("email") || "";
-      const username = urlParams.get("username") || "";
-      document.getElementById("otpEmail").value = email;
-      document.getElementById("otpUsername").value = username;
-      const otpModal = new bootstrap.Modal(document.getElementById("verifyOtpModal"));
-      otpModal.show();
-    }
-  });
-</script>
-<!-- ⚡ Socket.io username check -->
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  const socket = io();
+                            <div class="or-divider">OR</div>
 
-  const usernameInput = document.getElementById("registerUsername");
-  const statusText = document.getElementById("register-username-status");
+                            <a href="/user/google" class="btn btn-google w-100 d-flex align-items-center justify-content-center">
+                                <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
+                                Continue with Google
+                            </a>
+                        </div>
 
-  if (usernameInput) {
-    usernameInput.addEventListener("input", () => {
-      const username = usernameInput.value.trim();
-      if (username.length > 0) {
-        socket.emit("checkUsername", username);
-      } else {
-        statusText.textContent = "";
-        usernameInput.classList.remove("text-success", "text-danger");
-      }
-    });
-  }
+                        <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                            <form action="/user/registeredUser" method="POST">
+                                <div class="mb-3">
+                                    <label for="registerUsername" class="form-label">Username</label>
+                                    <input type="text" id="registerUsername" class="form-control" name="username" required>
+                                    <small id="register-username-status"></small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" id="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" id="registerPassword" class="form-control" name="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">Register As</label>
+                                    <select class="form-select" id="role" name="role" required>
+                                        <option value="user" selected>User</option>
+                                        <option value="seller">Seller</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Register</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-  socket.on("usernameStatus", (data) => {
-    if (data.exists) {
-      statusText.textContent = "⚠️ Username already exists!";
-      statusText.classList.remove("text-success");
-      statusText.classList.add("text-danger");
-      usernameInput.classList.add("text-danger");
-      usernameInput.classList.remove("text-success");
-    } else {
-      statusText.textContent = "✅ Username available!";
-      statusText.classList.remove("text-danger");
-      statusText.classList.add("text-success");
-      usernameInput.classList.add("text-success");
-      usernameInput.classList.remove("text-danger");
-    }
-  });
-</script>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Email Verification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/user/verify-otp" method="POST">
+                        <input type="hidden" name="email" id="otpEmail" value=""> 
+                        <input type="hidden" name="username" id="otpUsername" value="">
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">Enter OTP</label>
+                            <input type="text" id="otp" class="form-control" name="otp" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Verify</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="coinModal" tabindex="-1" aria-labelledby="coinModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+
+                <div class="gold-coin mb-2">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+
+                <h2 class="fw-bold" id="coinModalLabel">
+                    Your PP Coins: <%= typeof currUser !== 'undefined' ? (currUser.ppCoins || 0) : 0 %>
+                </h2>
+
+                <hr>
+
+                <h5 class="text-warning mb-3">SP Coins from Stores</h5>
+
+                <% if (typeof currUser !== 'undefined' && currUser && currUser.spCoins && currUser.spCoins.length > 0) { %>
+
+                <% currUser.spCoins.forEach(sp => { %>
+
+                <a href="/store/<%= sp.storeId %>" class="text-decoration-none">
+                    <div class="sp-box d-flex align-items-center p-2 mb-2"
+                        style="background:#4e342e; border-radius:10px; color:#fce8c8;">
+
+                        <div class="text-start">
+                            <b class="text-warning"><%= sp.storeName %></b><br>
+
+                            <span class="text-white"><%= sp.coins %> SP</span>
+                        </div>
+
+                    </div>
+                </a>
+
+                <% }) %>
+
+                <% } else { %>
+
+                <p>No SP coins earned yet.</p>
+
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <% if (typeof notifications !== 'undefined' && notifications && notifications.length > 0) { %>
+
+                    <% notifications.forEach(n => { %>
+
+                    <div class="notification-item d-flex align-items-start p-3 mb-3 rounded shadow-sm">
+
+                        <div class="notif-icon me-3">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+
+                        <div class="flex-grow-1">
+
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1 fw-semibold">
+                                    <%= n.user?.username || 'System' %>
+                                </h6>
+
+                                <span class="badge <%= n.isRead ? 'bg-secondary' : 'bg-primary' %>">
+                                    <%= n.isRead ? 'Read' : 'New' %>
+                                </span>
+                            </div>
+
+                            <p class="mb-1 text-muted small"><%= n.message %></p>
+
+                            <% if (n.link) { %>
+                            <a href="<%= n.link %>" class="notif-link">Open Details →</a>
+                            <% } %>
+
+                            <div class="text-muted mt-1 small">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                <%= new Date(n.date).toLocaleString() %>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <% }) %>
+
+                    <% } else { %>
+
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-regular fa-bell-slash fa-2x mb-2"></i>
+                        <div>No notifications yet</div>
+                    </div>
+
+                    <% } %>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <div id="paymentSuccessPopup">
+        <i class="fa-solid fa-circle-check me-1"></i> Payment Successful!
+    </div>
+
+
+    <div class="bg-white border-bottom">
+        <ul class="nav justify-content-center py-2">
+            <% if (typeof categories !== 'undefined' && categories && categories.length> 0) { %>
+                <% categories.forEach(cat=> { %>
+                    <li class="nav-item dropdown mega-dropdown">
+                        <a class="nav-link dropdown-toggle fw-semibold" href="/category/<%= cat %>" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <%= cat %>
+                        </a>
+                        <div class="dropdown-menu mega-menu p-3">
+                            <div class="row row-cols-1 row-cols-md-4 g-2"> 
+                                <% if (typeof categoryItems !== 'undefined' && categoryItems && categoryItems[cat]) { %>
+                                    <% categoryItems[cat].forEach(item=> { %>
+                                        <div class="col">
+                                            <a class="dropdown-item" href="/listing/<%= item._id %>">
+                                                <%= item.itemName %>
+                                            </a>
+                                        </div>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <div class="col-12 text-center text-muted small">No items in this category.</div>
+                                                <% } %>
+                            </div>
+                        </div>
+                    </li>
+                    <% }) %>
+                        <% } %>
+        </ul>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Global function to show the payment success popup
+        function showPaymentSuccess() {
+            const popup = document.getElementById('paymentSuccessPopup');
+            if(popup) {
+                popup.style.display = "block";
+
+                setTimeout(() => {
+                    popup.style.display = "none";
+                }, 2000);
+            }
+        }
+        
+        // Auto-open Modals on Load based on URL parameters
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Auto open login modal
+            if (urlParams.get("showLogin") === "true") {
+                const loginModalEl = document.getElementById("loginModal");
+                if (loginModalEl) {
+                    const loginModal = new bootstrap.Modal(loginModalEl);
+                    loginModal.show();
+
+                    if (urlParams.get("tab") === "register") {
+                        document.querySelector("#login-tab")?.classList.remove("active");
+                        document.querySelector("#login")?.classList.remove("show", "active");
+                        document.querySelector("#register-tab")?.classList.add("active");
+                        document.querySelector("#register")?.classList.add("show", "active");
+                    }
+                }
+            }
+
+            // Auto open OTP modal
+            if (urlParams.get("showVerifyOtp") === "true") {
+                const otpModalEl = document.getElementById("verifyOtpModal");
+                if (otpModalEl) {
+                    const email = urlParams.get("email") || "";
+                    const username = urlParams.get("username") || "";
+                    document.getElementById("otpEmail").value = email;
+                    document.getElementById("otpUsername").value = username;
+                    const otpModal = new bootstrap.Modal(otpModalEl);
+                    otpModal.show();
+                }
+            }
+        });
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script> 
+    <script>
+        const socket = io();
+
+        const usernameInput = document.getElementById("registerUsername");
+        const statusText = document.getElementById("register-username-status");
+
+        if (usernameInput && statusText) {
+            usernameInput.addEventListener("input", () => {
+                const username = usernameInput.value.trim();
+                if (username.length > 0) {
+                    // Check only when a sufficient number of characters is typed
+                    if (username.length >= 3) { 
+                        socket.emit("checkUsername", username);
+                        statusText.textContent = "Checking availability...";
+                        statusText.classList.remove("text-success", "text-danger");
+                        usernameInput.classList.remove("text-success", "text-danger");
+                    } else {
+                        statusText.textContent = "Username must be at least 3 characters.";
+                        statusText.classList.remove("text-success");
+                        statusText.classList.add("text-danger");
+                        usernameInput.classList.add("text-danger");
+                        usernameInput.classList.remove("text-success");
+                    }
+
+                } else {
+                    statusText.textContent = "";
+                    usernameInput.classList.remove("text-success", "text-danger");
+                }
+            });
+        }
+
+        socket.on("usernameStatus", (data) => {
+            if (statusText && usernameInput) {
+                if (data.exists) {
+                    statusText.textContent = "⚠️ Username already exists!";
+                    statusText.classList.remove("text-success");
+                    statusText.classList.add("text-danger");
+                    usernameInput.classList.add("is-invalid"); // Use Bootstrap validation class
+                    usernameInput.classList.remove("is-valid");
+                } else {
+                    statusText.textContent = "✅ Username available!";
+                    statusText.classList.remove("text-danger");
+                    statusText.classList.add("text-success");
+                    usernameInput.classList.add("is-valid");
+                    usernameInput.classList.remove("is-invalid");
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -142,9 +142,11 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user || null;
+    res.locals.notifications = req.user ? req.user.notifications || [] : [];
   res.locals.googleApiKey = process.env.GOOGLE_API_KEY;
   next();
 });
+
 
 // 🧩 Load categories for navbar
 app.use(async (req, res, next) => {
@@ -163,6 +165,29 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
+const Notification = require("./models/Notification.js"); // if you have it
+
+app.use(async (req, res, next) => {
+  res.locals.currUser = req.user;
+
+  if (req.user) {
+    // Fetch fresh user to get coins + spCoins
+    const freshUser = await User.findById(req.user._id);
+
+    res.locals.currUser = freshUser;
+
+    // Fetch notifications
+    const notifications = await Notification.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+    res.locals.notifications = notifications;
+  } else {
+    res.locals.notifications = [];
+  }
+
+  next();
+});
+
 
 // -------------------- Routes --------------------
 // -------------------- Routes --------------------
@@ -213,14 +238,20 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send(message);
 });
 
+
+
+const deleteOrphanStores = require("./utils/deleteOrphanStores");
+
+deleteOrphanStores(); // run once when server starts
+
 // -------------------- Start Server --------------------
 server.listen(3000, () =>
-  console.log("🚀 Server running on http://localhost:3000")
+  console.log("🚀 Server running on http://192.168.1.3:3000")
 );
 
 
 
-
+ 
 
 
 //  git add .
