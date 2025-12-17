@@ -1,264 +1,452 @@
-<%- include('./components/header.ejs') %>
+<title>
+  <%= store.shopName %> | Store 🏪
+</title>
+<style>
+  /* ================================ THEME VARIABLES ================================ */
+  :root {
+    --primary-color: #6d4c41;
+    /* Brown */
+    --accent-color: #ff9800;
+    /* Orange/Gold for highlight */
+    --light-bg: #f5f5f5;
+    /* Off-White/Light Gray */
+    --text-dark: #333;
+    --shadow-base: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+  }
 
+  body {
+    background: var(--light-bg);
+    font-family: "Poppins", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-dark);
+  }
 
-<head>
-  <meta charset="UTF-8" />
-  <title><%= store.shopName %> | Store 🏪</title>
+  .container {
+    flex: 1;
+    padding-top: 20px;
+    padding-bottom: 50px;
+  }
 
-  <style>
-    body {
-      background: #f8f9fa;
-      font-family: "Poppins", sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+  /* ================================ ANIMATION CLASSES ================================ */
+  .fade-in-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ================================ BANNER */
+  .store-banner {
+    width: 100%;
+    height: 280px;
+    border-radius: 18px;
+    margin: 25px 0;
+    overflow: hidden;
+    box-shadow: 0 10px 25px var(--shadow-base);
+    position: relative;
+  }
+
+  .store-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .edit-icon,
+  .logo-edit-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--shadow-base);
+    z-index: 10;
+    color: var(--primary-color);
+  }
+
+  /* Dropzone highlight */
+  .dropzone-hover {
+    outline: 4px dashed var(--primary-color);
+    outline-offset: -12px;
+  }
+
+  /* ================================ INFO BOX */
+  .store-info-box {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    margin-top: -80px;
+    box-shadow: 0 10px 30px var(--shadow-base);
+    position: relative;
+    z-index: 5;
+  }
+
+  .shop-logo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 6px solid white;
+    background: white;
+    box-shadow: 0 6px 20px var(--shadow-base);
+    transition: 0.3s ease;
+  }
+
+  .shop-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ================================ PRODUCT CARDS */
+  .listing-card {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+    height: 100%;
+  }
+
+  .listing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px var(--shadow-hover);
+  }
+
+  .listing-img {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    /* Reduced card image height */
+    overflow: hidden;
+  }
+
+  .listing-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.5s;
+  }
+
+  .listing-card:hover img {
+    transform: scale(1.05);
+  }
+
+  .category-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--primary-color);
+    padding: 5px 12px;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+  }
+
+  .heart-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: #ff385c;
+  }
+
+  .card-body {
+    padding: 15px;
+    flex-grow: 1;
+  }
+
+  .listing-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-dark);
+  }
+
+  .listing-desc {
+    font-size: 0.85rem;
+    color: #666;
+    height: 34px;
+    overflow: hidden;
+    line-height: 1.2;
+  }
+
+  .rating i {
+    color: var(--accent-color);
+  }
+
+  .card-footer {
+    background: #fafafa;
+    padding: 12px 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+  }
+
+  .price-tag {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .view-text {
+    color: #888;
+    transition: color 0.3s;
+  }
+
+  .listing-card:hover .view-text {
+    color: var(--primary-color);
+  }
+
+  /* ================================ BADGE ICONS */
+  .badge-icon {
+    font-size: 1.8rem;
+    -webkit-text-stroke: 1px var(--text-dark);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .badge-icon.bronze {
+    color: #cd7f32;
+    -webkit-text-stroke: 1px #8b572a;
+  }
+
+  .badge-icon.silver {
+    color: #c0c0c0;
+    -webkit-text-stroke: 1px #a8a8a8;
+  }
+
+  .badge-icon.gold {
+    color: #ffd700;
+    -webkit-text-stroke: 1px #ccaa00;
+  }
+
+  .badge-icon.platinum {
+    color: #e5e1d9;
+    -webkit-text-stroke: 1px #29248f;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ================================ THEMED BUTTONS */
+  .btn-success {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  .btn-success:hover {
+    background-color: #5d4037 !important;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #e68900 !important;
+  }
+
+  /* ================================ MEDIA QUERIES (RESPONSIVENESS) */
+  /* Default: Mobile-first (col-6 for 2 per row) */
+  .row>div {
+    /* This targets all direct children of row for mobile base */
+    width: 50%;
+  }
+
+  /* Medium screens (md): 4 per row (col-md-3) */
+  @media (min-width: 768px) {
+    .row .col-md-3 {
+      flex: 0 0 auto;
+      width: 25%;
     }
-    .container { flex: 1; }
 
-    /* ================================ BANNER */
-    .store-banner {
-      width: 100%;
-      height: 280px;
-      border-radius: 18px;
-      margin: 25px 0;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .store-banner img {
-      width: 100%; height: 100%;
-      object-fit: cover;
+    /* Ensure the original large/small classes are overwritten for product cards */
+    .row>div.col-12,
+    .row>div.col-sm-6,
+    .row>div.col-lg-4 {
+      width: 25%;
+      /* Apply 4 per row on desktop */
     }
 
-    .edit-icon, .logo-edit-icon {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: white;
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      z-index: 10;
+    .row>div.col-sm-6 {
+      width: 50%;
+      /* Reapply 2 per row for smaller screens if needed, though col-6 handles it */
     }
+  }
 
-    /* Dropzone highlight */
-    .dropzone-hover {
-      outline: 3px dashed #4caf50;
-      outline-offset: -10px;
-    }
+  /* Base Styles: Static Positioning and Default Look */
+  .coin-display {
+    /* Positioning (Fixed Top Right) */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 
-    /* ================================ INFO BOX */
-    .store-info-box {
-      background: white;
-      padding: 25px;
-      border-radius: 18px;
-      margin-top: -60px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      position: relative;
-    }
+    /* Common Appearance */
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    /* Smooth transition for class changes */
+  }
 
-    .shop-logo {
-      width: 130px; height: 130px;
-      border-radius: 50%; overflow: hidden;
-      border: 5px solid white;
-      background: white;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.15);
-      transition: 0.3s ease;
-    }
-    .shop-logo img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+  /* Base Style for the Text inside the div */
+  .coin-display p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Space between icon/text */
+  }
 
-    /* ================================ PRODUCT CARDS */
-    .listing-card {
-      width: 100%;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      transition: 0.25s ease;
-    }
-    .listing-card:hover { transform: translateY(-4px); }
+  /* Coin Icon Placeholder */
+  .coin-icon {
+    /* You can use a real image or a font icon here, e.g., Font Awesome */
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    background-color: #ffd700;
+    /* Default coin color */
+    border-radius: 50%;
+    border: 2px solid #ccad00;
+  }
+</style>
 
-    .listing-img {
-      position: relative;
-      width: 100%;
-      height: 240px;
-      overflow: hidden;
-      border-radius: 16px;
-    }
-    .listing-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: 0.4s;
-    }
-    .listing-card:hover img { transform: scale(1.08); }
-
-    .category-badge {
-      position: absolute;
-      top: 12px; left: 12px;
-      background: rgba(0,0,0,0.7);
-      padding: 6px 14px;
-      color: white;
-      border-radius: 20px;
-      font-size: 0.8rem;
-    }
-
-    .heart-btn {
-      position: absolute;
-      top: 12px; right: 12px;
-      background: rgba(255,255,255,0.8);
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-
-    .card-body { padding: 12px 14px; }
-    .listing-title { font-size: 1.1rem; font-weight: 600; margin: 0; }
-    .listing-desc { font-size: 0.9rem; color: #777; height: 38px; overflow: hidden; }
-
-    .rating i { color: #ff385c; }
-
-    .card-footer { background: white; padding: 12px 14px; border-top: 1px solid #eee; }
-    .badge-icon {
-  font-size: 2.3rem;
-  -webkit-text-stroke: 1px #333;
-  
-}
-
-/* Badge Colors */
-.badge-icon.bronze {
-  color: #cd7f32;
-}
-
-.badge-icon.silver {
-  color: #c0c0c0;
-}
-
-.badge-icon.gold {
-  color: #ffd700;
-}
-
-.badge-icon.platinum {
-  color: #e5e1d9;
-  -webkit-text-stroke: 1px #ffe205;
-}
-.badge-icon.platinum {
-  color: #29248f;
-  -webkit-text-stroke: 1px #1e1f0b;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-}
-
-  </style>
-</head>
-
-<body>
 <div class="container">
+  <p>
+    <i class="fa-solid fa-ticket"></i> voucher: <%= userShopCoins %>
+  </p>
 
-  <!-- ======================= BANNER ======================= -->
-  <div class="store-banner" id="bannerDropZone">
-    <img id="bannerImg" src="<%= store.shopBanner || 'https://via.placeholder.com/1500x500' %>">
+  <div class="store-banner fade-in-on-scroll" id="bannerDropZone">
+    <img id="bannerImg"
+      src="<%= store.shopBanner || 'https://via.placeholder.com/1500x500/8d6e63/ffffff?text=Store+Banner' %>">
 
-    <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
+    <% if (currUser && currUser._id.toString()===owner._id.toString()) { %>
       <div class="edit-icon"><i class="fa-solid fa-pen"></i></div>
 
       <form id="bannerForm" style="display:none;">
         <input type="file" id="bannerInput" name="banner" accept="image/*" />
       </form>
-    <% } %>
+      <% } %>
   </div>
 
-  <!-- ======================= INFO BOX ======================= -->
-  <div class="store-info-box">
+  <div class="store-info-box fade-in-on-scroll" id="storeInfo">
     <div class="d-flex align-items-center gap-3 flex-wrap">
 
       <div class="position-relative" id="logoDropZone">
         <div class="shop-logo">
-          <img id="logoImg" src="<%= store.shopLogo || 'https://via.placeholder.com/200' %>">
+          <img id="logoImg" src="<%= store.shopLogo || 'https://via.placeholder.com/200/8d6e63/ffffff?text=Logo' %>">
         </div>
 
-        <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
+        <% if (currUser && currUser._id.toString()===owner._id.toString()) { %>
           <div class="logo-edit-icon"><i class="fa-solid fa-pen"></i></div>
 
           <form id="logoForm" style="display:none;">
             <input type="file" id="logoInput" name="logo" accept="image/*" />
           </form>
-        <% } %>
+          <% } %>
       </div>
 
-<div class="mt-4 mt-md-0">
-<h1 class="fw-bold m-0 d-flex align-items-center gap-2">
-  <%= store.shopName %>
+      <div class="mt-4 mt-md-0">
+        <h1 class="fw-bold m-0 d-flex align-items-center gap-2">
+          <%= store.shopName %>
 
-  <% if (store.badge) { 
-       const badge = store.badge.toLowerCase();
-  %>
+            <% if (store.badge) { const badge=store.badge.toLowerCase(); %>
+              <% if (badge==="bronze" ) { %>
+                <i class="fa-solid fa-award badge-icon bronze" title="Bronze Store"></i>
+                <% } else if (badge==="silver" ) { %>
+                  <i class="fa-solid fa-award badge-icon silver" title="Silver Store"></i>
+                  <% } else if (badge==="gold" || badge==="golden" ) { %>
+                    <i class="fa-solid fa-award badge-icon gold" title="Gold Store"></i>
+                    <% } else if (badge==="platinum" ) { %>
+                      <i class="fa-solid fa-award badge-icon platinum" title="Platinum Store"></i>
+                      <% } %>
+                        <% } %>
+        </h1>
 
-    <% if (badge === "bronze") { %>
-      <i class="fa-solid fa-award badge-icon bronze" title="Bronze Store"></i>
+        <p class="text-muted mb-1">Owned by <strong>
+            <%= owner.username %>
+          </strong></p>
 
-    <% } else if (badge === "silver") { %>
-      <i class="fa-solid fa-award badge-icon silver" title="Silver Store"></i>
-
-    <% } else if (badge === "gold" || badge === "golden") { %>
-      <i class="fa-solid fa-award badge-icon gold" title="Gold Store"></i>
-
-    <% } else if (badge === "platinum") { %>
-      <i class="fa-solid fa-award badge-icon platinum" title="Platinum Store"></i>
-    <% } %>
-
-  <% } %>
-</h1>
-
-
-
-  <p class="text-muted mb-1">Owned by <strong><%= owner.username %></strong></p>
-
-  <p class="text-muted">
-    <i class="fa-solid fa-location-dot"></i> 
-    <%= store.address || "Not provided" %>
-  </p>
-</div>
+        <p class="text-muted">
+          <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i>
+          <%= store.address || "Not provided" %>
+        </p>
+      </div>
 
     </div>
 
-    <p class="mt-3 text-secondary"><%= store.description || "No shop description added." %></p>
+    <p class="mt-3 text-secondary">
+      <%= store.description || "No shop description added." %>
+    </p>
 
-    <% if (currUser && currUser._id.toString() === owner._id.toString()) { %>
-      <a href="/listing/new" class="btn btn-success mt-2">+ Add New Listing</a>
-    <% } %>
+    <% if (currUser && currUser._id.toString()===owner._id.toString()) { %>
+      <a href="/listing/new" class="btn btn-success mt-3">+ Add New Listing</a>
+      <% } %>
   </div>
 
-  <!-- ======================= PRODUCT LIST ======================= -->
   <div class="mt-5">
     <h3 class="fw-bold">Products from this Store</h3>
 
     <div class="row g-4 mt-2">
-      <% listings.forEach(listing => { %>
+      <% listings.forEach(listing=> { %>
 
-        <div class="col-12 col-sm-6 col-lg-4">
+        <div class="col-6 col-md-3">
 
           <a href="/listing/<%= listing._id %>" class="text-decoration-none">
-            <div class="listing-card">
+            <div class="listing-card fade-in-on-scroll">
 
               <div class="listing-img">
                 <img src="<%= listing.image.url %>">
-                <span class="category-badge"><%= listing.category %></span>
+                <span class="category-badge">
+                  <%= listing.category %>
+                </span>
                 <div class="heart-btn"><i class="fa-regular fa-heart"></i></div>
               </div>
 
               <div class="card-body">
-                <h5 class="listing-title"><%= listing.itemName %></h5>
-                <p class="listing-desc"><%= listing.description %></p>
+                <h5 class="listing-title">
+                  <%= listing.itemName %>
+                </h5>
+                <p class="listing-desc">
+                  <%= listing.description %>
+                </p>
 
                 <div class="d-flex justify-content-between mt-2">
-                  <span class="rating"><i class="fa-solid fa-star"></i> <%= listing.averageRating || "0.0" %></span>
-                  <span class="text-muted small"><i class="fa-solid fa-location-dot"></i>
-                    <%= listing.city %>, <%= listing.country %></span>
+                  <span class="rating"><i class="fa-solid fa-star"></i>
+                    <%= listing.averageRating || "0.0" %>
+                  </span>
+                  <span class="text-muted small">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <%= listing.city %>, <%= listing.country %>
+                  </span>
                 </div>
               </div>
 
@@ -270,91 +458,144 @@
             </div>
           </a>
 
-          <% if(currUser && currUser._id.toString() === owner._id.toString()) { %>
-            <a href="/listing/<%= listing._id %>/edit" class="btn btn-primary btn-sm mt-2">Edit</a>
-            <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" style="display:inline;">
-              <button class="btn btn-danger btn-sm mt-2">Delete</button>
-            </form>
-          <% } %>
+          <% if(currUser && currUser._id.toString()===owner._id.toString()) { %>
+            <div class="d-flex gap-2 mt-2">
+              <a href="/listing/<%= listing._id %>/edit" class="btn btn-primary btn-sm">Edit</a>
+              <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
+            <% } %>
 
         </div>
 
-      <% }) %>
+        <% }) %>
     </div>
   </div>
 </div>
 
-<!-- ======================= DRAG & DROP JS ======================= -->
 <script>
-function enableDragDrop(dropZoneId, inputId, imgId, uploadUrl) {
-  const dropZone = document.getElementById(dropZoneId);
-  const input = document.getElementById(inputId);
-  const img = document.getElementById(imgId);
+  // ======================= DRAG & DROP JS =======================
+  function enableDragDrop(dropZoneId, inputId, imgId, uploadUrl) {
+    const dropZone = document.getElementById(dropZoneId);
+    const input = document.getElementById(inputId);
+    const img = document.getElementById(imgId);
 
-  ["dragenter","dragover"].forEach(evt=>{
-    dropZone.addEventListener(evt, e=>{
-      e.preventDefault();
-      dropZone.classList.add("dropzone-hover");
+    // Added check: If any element is missing, exit the function.
+    if (!dropZone || !input || !img) {
+      console.error(`Missing required elements for drag-drop zone: ${dropZoneId}`);
+      return;
+    }
+
+    // ... (Your existing drag/drop logic is correct)
+    ["dragenter", "dragover"].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        e.preventDefault();
+        dropZone.classList.add("dropzone-hover");
+      });
     });
-  });
 
-  ["dragleave","drop"].forEach(evt=>{
-    dropZone.addEventListener(evt, e=>{
-      e.preventDefault();
-      dropZone.classList.remove("dropzone-hover");
+    ["dragleave", "drop"].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        e.preventDefault();
+        dropZone.classList.remove("dropzone-hover");
+      });
     });
-  });
 
-  dropZone.addEventListener("drop", e=>{
-    const file = e.dataTransfer.files[0];
-    if(file) previewAndUpload(file);
-  });
+    dropZone.addEventListener("drop", e => {
+      const file = e.dataTransfer.files[0];
+      if (file) previewAndUpload(file);
+    });
 
-  input.addEventListener("change", ()=>{
-    const file = input.files[0];
-    if(file) previewAndUpload(file);
-  });
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (file) previewAndUpload(file);
+    });
 
-  async function previewAndUpload(file){
-    img.src = URL.createObjectURL(file);
+    async function previewAndUpload(file) {
+      img.src = URL.createObjectURL(file);
 
-    const fd = new FormData();
+      const fd = new FormData();
+      const field = uploadUrl.includes("banner") ? "banner" : "logo";
 
-    // correct field name based on URL
-    const field = uploadUrl.includes("banner") ? "banner" : "logo";
+      fd.append(field, file);
 
-    fd.append(field, file);
-
-    await fetch(uploadUrl, { method:"POST", body:fd });
+      // Use a try/catch block for robust network error handling
+      try {
+        await fetch(uploadUrl, { method: "POST", body: fd });
+        console.log(`${field} uploaded successfully.`);
+      } catch (error) {
+        console.error(`Error uploading ${field}:`, error);
+        alert(`Failed to upload ${field}. Check console for details.`);
+      }
+    }
   }
-}
 
-/* Enable drag-drop for banner + logo */
-enableDragDrop(
-  "bannerDropZone",
-  "bannerInput",
-  "bannerImg",
-  "/store/<%= store._id %>/banner"
-);
+  document.addEventListener("DOMContentLoaded", () => {
+    /* Enable drag-drop for banner + logo */
+    enableDragDrop(
+      "bannerDropZone",
+      "bannerInput",
+      "bannerImg",
+      "/store/<%= store._id %>/banner"
+    );
 
-enableDragDrop(
-  "logoDropZone",
-  "logoInput",
-  "logoImg",
-  "/store/<%= store._id %>/logo"
-);
+    enableDragDrop(
+      "logoDropZone",
+      "logoInput",
+      "logoImg",
+      "/store/<%= store._id %>/logo"
+    );
 
-/* Pen icon triggers file input */
-document.querySelectorAll(".edit-icon, .logo-edit-icon").forEach(icon=>{
-  icon.addEventListener("click", ()=>{
-    const input = icon.parentElement.querySelector("input[type='file']");
-    input.click();
+    /* Pen icon triggers file input */
+    document.querySelectorAll(".edit-icon, .logo-edit-icon").forEach(icon => {
+      icon.addEventListener("click", () => {
+        // Traverse up to the parent element that contains both the icon and the form
+        const container = icon.closest('.store-banner') || icon.closest('.position-relative');
+        const input = container ? container.querySelector("input[type='file']") : null;
+
+        if (input) {
+          input.click();
+        } else {
+          console.error("Could not find the file input associated with the edit icon.");
+        }
+      });
+    });
+
+    // ... (Your scroll animation script here)
+    const animatedElements = document.querySelectorAll(".fade-in-on-scroll");
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "0px", threshold: 0.1 });
+
+    animatedElements.forEach(element => {
+      observer.observe(element);
+    });
+
+  }); // End of DOMContentLoaded
+  // Elements to animate: Banner, Info Box, and all Listing Cards
+  const animatedElements = document.querySelectorAll(".fade-in-on-scroll");
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target); // Stop observing once visible
+      }
+    });
+  }, {
+    rootMargin: "0px",
+    threshold: 0.1 // Trigger when 10% of the item is visible
   });
-});
+
+  animatedElements.forEach(element => {
+    observer.observe(element);
+  });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-
-<%- include('./components/footer.ejs') %>

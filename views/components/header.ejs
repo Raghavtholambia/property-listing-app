@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent Hub</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         /* 🟤 Base Theme Colors */
         :root {
@@ -62,8 +55,11 @@
         form.d-flex input[type="search"] {
             border-radius: 30px;
             border: none;
-            padding-left: 15px;
+            display: block;
+            margin: auto;
+            padding-left: 25px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width:35vh
         }
 
         form.d-flex input:focus {
@@ -127,10 +123,14 @@
             max-height: 300px;
             overflow-y: auto;
         }
-
-        .mega-dropdown:hover .dropdown-menu {
-            display: block;
+        /* Mega menu hover ONLY on desktop */
+        @media (min-width: 992px) {
+            /* Fix: Use the parent class to show the menu on hover */
+            .mega-dropdown:hover > .dropdown-toggle + .dropdown-menu {
+                display: block;
+            }
         }
+
 
         @keyframes fadeIn {
             from {
@@ -307,7 +307,8 @@
             color: var(--brown-light) !important;
         }
 
-        .dropdown-toggle::after {
+        /* Added to hide the caret only on the profile icon button */
+        .dropdown-toggle.nav-icon::after {
             display: none !important;
         }
 
@@ -485,9 +486,6 @@
             }
         }
     </style>
-</head>
-
-<body>
 
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid">
@@ -504,9 +502,22 @@
             <div class="collapse navbar-collapse" id="mainNav">
 
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/store">Shops</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cart/view">Cart</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" title="Products">
+                            <i class="fa-solid fa-box me-2">Products</i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/store" title="Shops">
+                            <i class="fa-solid fa-store">Shops</i>
+                            
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart/view" title="Cart">
+                            <i class="fa-solid fa-shopping-cart">Cart</i>
+                        </a>
+                    </li>
                 </ul>
 
 
@@ -520,33 +531,86 @@
 
                 <div class="d-flex align-items-center nav-icons gap-3 my-2 my-lg-0">
                     <% if(typeof currUser !== 'undefined' && currUser){ %>
-                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#coinModal">
+                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#coinModal" title="Coins">
                         <i class="fa-solid fa-coins"></i>
                         <span class="nav-badge"><%= currUser.ppCoins || 0 %></span>
                     </div>
 
 
-                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                    <div class="nav-icon" data-bs-toggle="modal" data-bs-target="#notificationModal" title="Notifications">
                         <i class="fa-solid fa-bell"></i>
                         <span class="nav-badge"><%= typeof notifications !== 'undefined' ? notifications.length : 0 %></span>
                     </div>
 
-
                     <div class="dropdown">
-                        <button class="btn text-white" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
-                            <i class="fa-solid fa-user-circle fa-xl"></i>
+                        <button
+                            class="btn nav-icon dropdown-toggle p-0"
+                            type="button"
+                            id="profileDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Account"
+                        >
+                            <i class="fa-solid fa-circle-user"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li class="dropdown-item-text fw-bold"><%= currUser.username %></li>
-                            <li>
-                                <hr class="dropdown-divider">
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">
+                            
+                            <li class="dropdown-item-text text-center fw-bold">
+                                <i class="fa-solid fa-user me-1"></i>
+                                <%= currUser.username %>
                             </li>
-                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                            <li><a class="dropdown-item text-danger" href="/user/logout">Logout</a></li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item" href="/profile">
+                                    <i class="fa-solid fa-id-card me-2"></i> Profile
+                                </a>
+                            </li>
+
+                            <% if (currUser.role !== 'seller') { %>
+                                <li>
+                                    <a class="dropdown-item" href="/seller/register">
+                                        <i class="fa-solid fa-store-slash me-2"></i> Become Seller
+                                    </a>
+                                </li>
+                            <% } else { %>
+                                <li>
+                                    <a class="dropdown-item" href="/seller/dashboard">
+                                        <i class="fa-solid fa-chart-line me-2"></i> Seller Dashboard
+                                    </a>
+                                </li>
+                            <% } %>
+
+                            <% if (currUser.role === 'seller') { %>
+                                <li>
+                                    <a class="dropdown-item text-success" href="/resource">
+                                        <i class="fa-solid fa-plus me-2"></i> Add Product
+                                    </a>
+                                </li>
+                            <% } else if (currUser.role === 'admin') { %>
+                                <li>
+                                    <a class="dropdown-item text-success" href="/resource">
+                                        <i class="fa-solid fa-shield-halved me-2"></i> Admin Dashboard
+                                    </a>
+                                </li>
+                            <% } %>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item text-danger" href="/user/logout">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                </a>
+                            </li>
                         </ul>
                     </div>
+
                     <% } else { %>
-                    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="fa-solid fa-sign-in-alt me-1 d-none d-lg-inline"></i> Login
+                    </button>
                     <% } %>
                 </div>
 
@@ -669,30 +733,24 @@
 
                 <h5 class="text-warning mb-3">SP Coins from Stores</h5>
 
-                <% if (typeof currUser !== 'undefined' && currUser && currUser.spCoins && currUser.spCoins.length > 0) { %>
+<% if (typeof currUser !== 'undefined' && currUser && currUser.shopCoins && currUser.shopCoins.length > 0) { %>
 
-                <% currUser.spCoins.forEach(sp => { %>
+  <% currUser.shopCoins.forEach(sp => { %>
+    <a href="/store/<%= sp.storeName.replace(/\s+/g, '-') %>" class="text-decoration-none">
+      <div class="sp-box d-flex align-items-center p-2 mb-2"
+           style="background:#4e342e; border-radius:10px; color:#fce8c8;">
+        <div class="text-start">
+          <b class="text-warning"><%= sp.storeName %></b><br>
+          <span class="text-white"><%= sp.coins %> SP</span>
+        </div>
+      </div>
+    </a>
+  <% }) %>
 
-                <a href="/store/<%= sp.storeId %>" class="text-decoration-none">
-                    <div class="sp-box d-flex align-items-center p-2 mb-2"
-                        style="background:#4e342e; border-radius:10px; color:#fce8c8;">
+<% } else { %>
+  <p>No SP coins earned yet.</p>
+<% } %>
 
-                        <div class="text-start">
-                            <b class="text-warning"><%= sp.storeName %></b><br>
-
-                            <span class="text-white"><%= sp.coins %> SP</span>
-                        </div>
-
-                    </div>
-                </a>
-
-                <% }) %>
-
-                <% } else { %>
-
-                <p>No SP coins earned yet.</p>
-
-                <% } %>
 
             </div>
         </div>
@@ -767,15 +825,14 @@
     <div id="paymentSuccessPopup">
         <i class="fa-solid fa-circle-check me-1"></i> Payment Successful!
     </div>
-
-
     <div class="bg-white border-bottom">
         <ul class="nav justify-content-center py-2">
             <% if (typeof categories !== 'undefined' && categories && categories.length> 0) { %>
                 <% categories.forEach(cat=> { %>
                     <li class="nav-item dropdown mega-dropdown">
                         <a class="nav-link dropdown-toggle fw-semibold" href="/category/<%= cat %>" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                            aria-expanded="false" role="button">
+                            <i class="fa-solid fa-tag me-1"></i> 
                             <%= cat %>
                         </a>
                         <div class="dropdown-menu mega-menu p-3">
@@ -784,18 +841,19 @@
                                     <% categoryItems[cat].forEach(item=> { %>
                                         <div class="col">
                                             <a class="dropdown-item" href="/listing/<%= item._id %>">
+                                                <i class="fa-solid fa-chevron-right me-1 small"></i>
                                                 <%= item.itemName %>
                                             </a>
                                         </div>
-                                        <% }) %>
-                                            <% } else { %>
-                                                <div class="col-12 text-center text-muted small">No items in this category.</div>
-                                                <% } %>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="col-12 text-center text-muted small">No items in this category.</div>
+                                            <% } %>
                             </div>
                         </div>
                     </li>
-                    <% }) %>
-                        <% } %>
+                <% }) %>
+                    <% } %>
         </ul>
     </div>
 
@@ -852,6 +910,9 @@
     
     <script src="/socket.io/socket.io.js"></script> 
     <script>
+        // NOTE: The socket.io implementation below assumes you have a running server
+        // sending 'usernameStatus' events. This script is client-side only.
+
         const socket = io();
 
         const usernameInput = document.getElementById("registerUsername");
@@ -866,40 +927,30 @@
                         socket.emit("checkUsername", username);
                         statusText.textContent = "Checking availability...";
                         statusText.classList.remove("text-success", "text-danger");
-                        usernameInput.classList.remove("text-success", "text-danger");
+                        usernameInput.classList.remove("is-valid", "is-invalid"); // Clear validation classes
                     } else {
                         statusText.textContent = "Username must be at least 3 characters.";
                         statusText.classList.remove("text-success");
                         statusText.classList.add("text-danger");
-                        usernameInput.classList.add("text-danger");
-                        usernameInput.classList.remove("text-success");
+                        usernameInput.classList.remove("is-valid", "is-invalid");
                     }
+                }
+            });
 
+            socket.on("usernameStatus", (isAvailable) => {
+                if (isAvailable) {
+                    statusText.textContent = "Username is available!";
+                    statusText.classList.remove("text-danger");
+                    statusText.classList.add("text-success");
+                    usernameInput.classList.remove("is-invalid");
+                    usernameInput.classList.add("is-valid");
                 } else {
-                    statusText.textContent = "";
-                    usernameInput.classList.remove("text-success", "text-danger");
+                    statusText.textContent = "Username is taken.";
+                    statusText.classList.remove("text-success");
+                    statusText.classList.add("text-danger");
+                    usernameInput.classList.remove("is-valid");
+                    usernameInput.classList.add("is-invalid");
                 }
             });
         }
-
-        socket.on("usernameStatus", (data) => {
-            if (statusText && usernameInput) {
-                if (data.exists) {
-                    statusText.textContent = "⚠️ Username already exists!";
-                    statusText.classList.remove("text-success");
-                    statusText.classList.add("text-danger");
-                    usernameInput.classList.add("is-invalid"); // Use Bootstrap validation class
-                    usernameInput.classList.remove("is-valid");
-                } else {
-                    statusText.textContent = "✅ Username available!";
-                    statusText.classList.remove("text-danger");
-                    statusText.classList.add("text-success");
-                    usernameInput.classList.add("is-valid");
-                    usernameInput.classList.remove("is-invalid");
-                }
-            }
-        });
     </script>
-</body>
-
-</html>

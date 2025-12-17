@@ -123,13 +123,11 @@ router.get("/:identifier", async (req, res) => {
 
   let store = await Store.findOne({ slug: identifier })
     .populate("owner")
-    .lean(false)
     .exec();
 
   if (!store) {
     store = await Store.findOne({ owner: identifier })
       .populate("owner")
-      .lean(false)
       .exec();
   }
 
@@ -137,22 +135,30 @@ router.get("/:identifier", async (req, res) => {
     return res.status(404).send("Store not found");
   }
 
-  // Force reload from DB (100% fresh)
-  store = await Store.findById(store._id)
-    .populate("owner")
-    .exec();
-
-  console.log("⭐ FRESH STORE:", store);
-
   const listings = await Listing.find({ owner: store.owner._id });
+ 
+  // ✅ USER SHOP COINS FOR THIS STORE
+  let userShopCoins = 0;
+
+  if (req.user) {
+    const freshUser = await User.findById(req.user._id);
+
+    const entry = freshUser.shopCoins.find(
+      c => c.storeId.toString() === store._id.toString()
+    );
+
+    userShopCoins = entry ? entry.coins : 0;
+  }
 
   res.render("store", {
     store,
     owner: store.owner,
     listings,
-    currUser: req.user
+    currUser: req.user,
+    userShopCoins   // 👈 PASS THIS
   });
 });
+
 
 
 module.exports = router;

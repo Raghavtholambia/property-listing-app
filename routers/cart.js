@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 // 🛍️ View Cart
 router.get("/view", isLoggedIn, async (req, res) => {
   const userId = req.user._id;
+  console.log(req.user.shopCoins);
+
 
   try {
   //       await Cart.findOneAndUpdate(
@@ -40,7 +42,7 @@ router.get("/view", isLoggedIn, async (req, res) => {
 
 
 // Add to cart
-router.post("/add/:id", async (req, res) => {
+router.post("/add/:id",isLoggedIn, async (req, res) => {
   try {
     const productId = req.params.id;
     const { startDate, endDate, quantity } = req.body;

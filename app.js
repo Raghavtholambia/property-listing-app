@@ -11,6 +11,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const ExpressError = require("./utils/ExpressError.js");
+const expressLayouts = require("express-ejs-layouts");
 
 // ✅ Models
 const User = require("./models/users.js"); // 🧠 You missed this line earlier!
@@ -59,8 +60,13 @@ io.on("connection", (socket) => {
 // -------------------- View Engine + Middleware --------------------
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(expressLayouts);          // ✅ ADD THIS
+app.set("layout", "layout");      // ✅ ADD THIS (views/layout.ejs)
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+
 
 // -------------------- Session + Flash --------------------
 app.use(
@@ -142,6 +148,7 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user || null;
+
     res.locals.notifications = req.user ? req.user.notifications || [] : [];
   res.locals.googleApiKey = process.env.GOOGLE_API_KEY;
   next();
@@ -240,9 +247,12 @@ app.use((err, req, res, next) => {
 
 
 
-const deleteOrphanStores = require("./utils/deleteOrphanStores");
+// const deleteOrphanStores = require("./utils/deleteOrphanStores");
 
-deleteOrphanStores(); // run once when server starts
+
+// deleteOrphanStores(); // run once when server starts
+
+
 
 // -------------------- Start Server --------------------
 server.listen(3000, () =>

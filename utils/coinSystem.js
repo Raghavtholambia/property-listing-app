@@ -2,96 +2,101 @@ const User = require("../models/users");
 const Store = require("../models/store");
 
 // ================================
-// 🏆 BADGE LEVELS
+// 🏆 STORE BADGE LEVELS
 // ================================
 const BADGE_LEVELS = [
   { name: "Bronze", threshold: 0 },
   { name: "Silver", threshold: 20000 },
   { name: "Gold", threshold: 50000 },
-  { name: "Platinum", threshold: 100000 }
+  { name: "Platinum", threshold: 100000 },
 ];
 
 // =========================================================
-// 🟢 BUYER COINS
+// 🟢 USER (RENTER) COINS
+// 2% ppCoins + 5% shopCoins
 // =========================================================
-async function awardBuyerCoins(userId, amount, storeId, listingId = null) {
+async function awardBuyerCoins(userId, amount, storeId) {
+
   const store = await Store.findById(storeId);
   if (!store) return null;
 
   const user = await User.findById(userId);
   if (!user) return null;
 
-  const ppCoins = Math.floor(amount * 0.05);
-  const spCoins = Math.floor(amount * 0.20);
+  const ppCoins = Math.floor(amount * 0.02);
+  const shopCoins = Math.floor(amount * 0.05);
 
+  // ➕ Platform coins
   user.ppCoins += ppCoins;
 
-  let entry = user.spCoins.find(
-    c => c.storeId.toString() === storeId.toString()
+  // ➕ Shop-specific coins
+  let entry = user.shopCoins.find(
+    (c) => c.storeId.toString() === storeId.toString()
   );
 
   if (!entry) {
-    user.spCoins.push({
+    user.shopCoins.push({
       storeId,
       storeName: store.shopName,
-      coins: spCoins,
-      listingId
+      coins: shopCoins,
     });
   } else {
-    entry.coins += spCoins;
+    entry.coins += shopCoins;
   }
 
   await user.save();
-  return { ppCoins, spCoins };
+
+  return { ppCoins, shopCoins };
 }
 
 // =========================================================
 // 🟣 SELLER + STORE COINS
 // =========================================================
-async function awardSellerCoins(sellerId, amount, storeId, listingId = null) {
+async function awardSellerCoins(sellerId, amount, storeId) {
   const store = await Store.findById(storeId);
   if (!store) return null;
 
   const seller = await User.findById(sellerId);
   if (!seller) return null;
 
-  const ppCoins = Math.floor(amount * 0.05);
-  const spCoins = Math.floor(amount * 0.20);
+  const ppCoins = Math.floor(amount * 0.02);
+  const shopCoins = Math.floor(amount * 0.05);
 
+  // ➕ Seller platform coins
   seller.ppCoins += ppCoins;
 
-  let entry = seller.spCoins.find(
-    c => c.storeId.toString() === storeId.toString()
+  // ➕ Seller shop coins (per store)
+  let entry = seller.shopCoins.find(
+    (c) => c.storeId.toString() === storeId.toString()
   );
 
   if (!entry) {
-    seller.spCoins.push({
+    seller.shopCoins.push({
       storeId,
       storeName: store.shopName,
-      coins: spCoins,
-      listingId
+      coins: shopCoins,
     });
   } else {
-    entry.coins += spCoins;
+    entry.coins += shopCoins;
   }
 
-  // ⭐ STORE BADGE COINS
-  store.shopCoins += spCoins;
+  // ⭐ Store total coins (for badge)
+  store.shopCoins += shopCoins;
 
   await seller.save();
   await store.save();
 
-  return { ppCoins, spCoins };
+  return { ppCoins, shopCoins };
 }
 
 // =========================================================
-// 🏆 UPDATE STORE BADGE (FINAL + CORRECT)
+// 🏆 UPDATE STORE BADGE
 // =========================================================
 async function updateStoreBadge(storeId) {
   const store = await Store.findById(storeId);
   if (!store) return null;
 
-  let badge = "bronze";
+  let badge = "Bronze";
 
   for (const level of BADGE_LEVELS) {
     if (store.shopCoins >= level.threshold) {
@@ -110,5 +115,5 @@ async function updateStoreBadge(storeId) {
 module.exports = {
   awardBuyerCoins,
   awardSellerCoins,
-  updateStoreBadge
+  updateStoreBadge,
 };

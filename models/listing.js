@@ -54,7 +54,6 @@ const listingSchema = new Schema({
   store: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Store",
-    required: true
   },
 
   // ⭐ NEW FIELD — listing must be approved by admin
