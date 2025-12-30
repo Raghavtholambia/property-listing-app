@@ -118,6 +118,11 @@ module.exports = (io) => {
     }),
     async (req, res) => {
       // Verified check
+
+      if(req.user){
+        return res.redirect("/");
+      }
+
       if (!req.user.isVerified) {
         req.logout(() => {
           io.emit("notification", { type: "error", message: "Please verify your email before logging in." });

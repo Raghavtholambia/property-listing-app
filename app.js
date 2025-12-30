@@ -16,6 +16,7 @@ const expressLayouts = require("express-ejs-layouts");
 // ✅ Models
 const User = require("./models/users.js"); // 🧠 You missed this line earlier!
 const Listing = require("./models/listing.js");
+const bookingRoutes = require("./routers/bookingRoutes");
 
 // ✅ Routers
 const listingRouter = require("./routers/listing.js");
@@ -234,6 +235,9 @@ app.use("/", listingRouter);
 
 // Reviews (after listing)
 app.use("/listing/:id", reviewsRouter);
+
+
+app.use("/api/bookings", bookingRoutes);
 
 
 
