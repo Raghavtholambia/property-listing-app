@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createBooking,
-  getBookedDates
-} = require("../controllers/bookingController");
+const bookingController = require("../controllers/bookingController");
+const lockController = require("../controllers/lockController");
+const {isLoggedIn} = require("../middleware");
 
-const { isLoggedIn } = require("../middleware");
-// create booking
-router.post("/", isLoggedIn, createBooking);
+router.get("/listing/:listingId", bookingController.getBookedDates);
+router.post("/create", isLoggedIn, bookingController.createBooking);
 
-// calendar data
-router.get("/listing/:listingId", getBookedDates);
+router.post("/lock-dates", isLoggedIn, lockController.lockDates);
+router.post("/unlock-dates", isLoggedIn, lockController.unlockDates);
 
 module.exports = router;

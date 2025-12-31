@@ -60,8 +60,13 @@ const listingSchema = new Schema({
   verifiedByAdmin: {
     type: Boolean,
     default: false
-  }
-});
+  },
+  totalQuantity: {
+    type: Number,
+    default: 1,
+    required: false
+},
+}, );
 
 // delete reviews when listing deleted
 listingSchema.post("findOneAndDelete", async (listing) => {

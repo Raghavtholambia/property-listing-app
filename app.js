@@ -30,6 +30,9 @@ const redirectBasedOnRole = require("./routers/resource.js");
 const storeRoute = require("./routers/store.js");
 const profileRoutes = require("./routers/profile");
 const sellerRoutes = require('./routers/sellerRoutes');
+const lockRoutes = require("./routers/lockRoutes");
+
+
 
 // -------------------- Socket.IO Setup --------------------
 const app = express();
@@ -52,6 +55,9 @@ io.on("connection", (socket) => {
     } catch (err) {
       console.error("Socket checkUsername error:", err);
     }
+  });
+    socket.on("joinListing", listingId => {
+    socket.join(listingId);
   });
 
   socket.on("disconnect", () => {
@@ -200,6 +206,11 @@ app.use(async (req, res, next) => {
 // -------------------- Routes --------------------
 // -------------------- Routes --------------------
 
+app.use("/api/bookings", bookingRoutes);
+
+
+app.use("/api", lockRoutes);
+
 // Admin routes
 app.use("/", adminRouter);
 
@@ -235,9 +246,6 @@ app.use("/", listingRouter);
 
 // Reviews (after listing)
 app.use("/listing/:id", reviewsRouter);
-
-
-app.use("/api/bookings", bookingRoutes);
 
 
 
